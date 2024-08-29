@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import axios from 'axios';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -39,7 +39,7 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
       const topActors = creditsResponse.data.cast.slice(0, 10).map((actor: any) => ({
         name: actor.name,
         id: actor.id,
-        profilePath: actor.profile_path, // Get actor's profile image path
+        profilePath: actor.profile_path,
       }));
 
       return {
@@ -91,6 +91,7 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
                 actorId: actor.id,
                 actorName: actor.name,
                 actorImageUrl: `https://image.tmdb.org/t/p/w200${actor.profilePath}`,
+                movieB: movies[1], // Pass Movie B information (index 1 is Movie B)
               })
             }
           >

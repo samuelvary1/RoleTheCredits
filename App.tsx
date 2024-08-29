@@ -5,6 +5,7 @@ import LoginScreen from './src/screens/LoginScreen';
 import SignUpScreen from './src/screens/SignUpScreen';
 import RandomMovies from './src/screens/RandomMovies';
 import ActorMoviesScreen from './src/screens/ActorMoviesScreen'; // Import ActorMoviesScreen
+import MovieDetailsScreen from './src/screens/MovieDetailsScreen'; // Import MovieDetailsScreen
 
 // Define the types for the navigation stack
 export type RootStackParamList = {
@@ -15,8 +16,24 @@ export type RootStackParamList = {
     actorId: number;
     actorName: string;
     actorImageUrl: string;
-  }; // Add ActorMoviesScreen with parameters
+    movieB: {
+      id: number;
+      title: string;
+      posterPath: string;
+    };
+  };
+  MovieDetailsScreen: {
+    movieId: number;
+    movieTitle: string;
+    moviePoster: string;
+    movieB: {
+      id: number;
+      title: string;
+      posterPath: string;
+    };
+  };
 };
+
 
 // Create the stack navigator
 const Stack = createStackNavigator<RootStackParamList>();
@@ -36,7 +53,12 @@ const App: React.FC = () => {
         <Stack.Screen 
           name="ActorMoviesScreen" 
           component={ActorMoviesScreen} 
-          options={{ headerShown: true, title: 'Actor Movies' }} // Optional: Show header with title
+          options={{ headerShown: true, title: 'Actor Movies' }} // Customize the screen title if desired
+        />
+        <Stack.Screen 
+          name="MovieDetailsScreen" 
+          component={MovieDetailsScreen} 
+          options={{ headerShown: true, title: 'Movie Details' }} // Customize the screen title if desired
         />
       </Stack.Navigator>
     </NavigationContainer>

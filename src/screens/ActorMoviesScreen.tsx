@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Button, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -24,9 +25,9 @@ type Movie = {
 const ActorMoviesScreen: React.FC<Props> = ({ route, navigation }) => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [moveIndex, setMoveIndex] = useState<number>(0); // Track the current move index
+  const [showTargetMovie, setShowTargetMovie] = useState<boolean>(false);
 
-  const { actorId, actorName, actorImageUrl } = route.params;
+  const { actorId, actorName, actorImageUrl, movieB } = route.params;
 
   useEffect(() => {
     const fetchActorMovies = async () => {
@@ -40,7 +41,15 @@ const ActorMoviesScreen: React.FC<Props> = ({ route, navigation }) => {
           posterPath: movie.poster_path,
           releaseYear: movie.release_date ? movie.release_date.split('-')[0] : 'N/A',
         }));
-        setMovies(moviesData);
+
+        // Sort the movies in reverse chronological order (most recent first)
+        const sortedMovies = moviesData.sort((a: { releaseYear: string; }, b: { releaseYear: string; }) => {
+          if (a.releaseYear === 'N/A') return 1;
+          if (b.releaseYear === 'N/A') return -1;
+          return b.releaseYear.localeCompare(a.releaseYear);
+        });
+
+        setMovies(sortedMovies);
       } catch (error) {
         console.error('Error fetching actor movies:', error);
       } finally {
@@ -50,20 +59,6 @@ const ActorMoviesScreen: React.FC<Props> = ({ route, navigation }) => {
 
     fetchActorMovies();
   }, [actorId]);
-
-  const handleBack = () => {
-    if (moveIndex > 0) {
-      setMoveIndex(moveIndex - 1);
-      // Implement your logic for going back a move
-    }
-  };
-
-  const handleForward = () => {
-    if (moveIndex < movies.length - 1) {
-      setMoveIndex(moveIndex + 1);
-      // Implement your logic for going forward a move
-    }
-  };
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
@@ -75,21 +70,37 @@ const ActorMoviesScreen: React.FC<Props> = ({ route, navigation }) => {
         <Image source={{ uri: actorImageUrl }} style={styles.actorImage} />
         <Text style={styles.actorName}>{actorName}</Text>
       </View>
-      
-      <View style={styles.navigationButtons}>
-        <Button title="Back" onPress={handleBack} disabled={moveIndex <= 0} />
-        <Button title="Forward" onPress={handleForward} disabled={moveIndex >= movies.length - 1} />
-      </View>
+
+      <TouchableOpacity style={styles.bullseyeButton} onPress={() => setShowTargetMovie(!showTargetMovie)}>
+        <FontAwesome name="crosshairs" size={24} color="#007BFF" />
+        {showTargetMovie && (
+          <View style={styles.targetMovieContainer}>
+            <Image source={{ uri: `https://image.tmdb.org/t/p/w200${movieB.posterPath}` }} style={styles.targetMoviePoster} />
+            <Text style={styles.targetMovieText}>{movieB.title}</Text>
+            <Text style={styles.targetMovieSubtitle}>Movie you're trying to get to</Text>
+          </View>
+        )}
+      </TouchableOpacity>
 
       <FlatList
         data={movies}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.movieItem}>
+          <TouchableOpacity
+            style={styles.movieItem}
+            onPress={() =>
+              navigation.navigate('MovieDetailsScreen', {
+                movieId: item.id,
+                movieTitle: item.title,
+                moviePoster: item.posterPath,
+                movieB: movieB, // Pass Movie B along
+              })
+            }
+          >
             <Image source={{ uri: `https://image.tmdb.org/t/p/w200${item.posterPath}` }} style={styles.moviePoster} />
             <Text style={styles.movieTitle}>{item.title}</Text>
             <Text style={styles.movieYear}>{item.releaseYear}</Text>
-          </View>
+          </TouchableOpacity>
         )}
         contentContainerStyle={styles.moviesList}
       />
@@ -118,12 +129,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
-  navigationButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '60%',
-    marginBottom: 20,
-  },
   moviesList: {
     paddingBottom: 20,
   },
@@ -142,6 +147,29 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   movieYear: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+  },
+  bullseyeButton: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  targetMovieContainer: {
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  targetMoviePoster: {
+    width: 120,
+    height: 180,
+    marginBottom: 10,
+  },
+  targetMovieText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  targetMovieSubtitle: {
     fontSize: 14,
     color: '#666',
     textAlign: 'center',
