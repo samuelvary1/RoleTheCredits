@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, Button, Image } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -18,8 +18,6 @@ type Movie = {
   posterPath: string;
   actors: { name: string; id: number }[];
 };
-
-console.log(TMDB_API_KEY);
 
 const RandomMovies: React.FC<Props> = ({ navigation }) => {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -73,26 +71,37 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
+  const renderMovie = ({ item, index }: { item: Movie; index: number }) => (
+    <View style={styles.movieContainer}>
+      <Text style={styles.movieTitle}>{index === 0 ? 'Movie A' : 'Movie B'}</Text>
+      <Image
+        source={{ uri: `https://image.tmdb.org/t/p/w500${item.posterPath}` }}
+        style={styles.poster}
+      />
+      <Text style={styles.title}>{item.title}</Text>
+      <Text style={styles.subtitle}>Top 10 Actors:</Text>
+      <FlatList
+        data={item.actors}
+        keyExtractor={(actor) => actor.id.toString()}
+        renderItem={({ item: actor }) => (
+          <Text style={styles.actor}>{actor.name}</Text>
+        )}
+      />
+    </View>
+  );
+
   return (
     <View style={styles.container}>
-      {movies.map((movie, index) => (
-        <View key={index} style={styles.movieContainer}>
-          <Image
-            source={{ uri: `https://image.tmdb.org/t/p/w500${movie.posterPath}` }}
-            style={styles.poster}
-          />
-          <Text style={styles.title}>{movie.title}</Text>
-          <Text style={styles.subtitle}>Top 10 Actors:</Text>
-          <FlatList
-            data={movie.actors}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <Text style={styles.actor}>{item.name}</Text>
-            )}
-          />
-        </View>
-      ))}
-      <Button title="Shuffle" onPress={loadMovies} />
+      <View style={styles.moviesRow}>
+        {movies.map((movie, index) => (
+          <View key={index} style={styles.movieWrapper}>
+            {renderMovie({ item: movie, index })}
+          </View>
+        ))}
+      </View>
+      <TouchableOpacity style={styles.shuffleButton} onPress={loadMovies}>
+        <Text style={styles.shuffleButtonText}>Shuffle</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -102,30 +111,59 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'center',
-  },
-  movieContainer: {
-    marginBottom: 30,
     alignItems: 'center',
   },
+  moviesRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  movieWrapper: {
+    flex: 1,
+    marginHorizontal: 10,
+  },
+  movieContainer: {
+    alignItems: 'center',
+  },
+  movieTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
   poster: {
-    width: 200,
-    height: 300,
+    width: 150,
+    height: 225,
     marginBottom: 10,
   },
   title: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 10,
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 16,
     marginTop: 10,
+    textAlign: 'center',
   },
   actor: {
-    fontSize: 16,
+    fontSize: 14,
     marginVertical: 2,
-    color: 'blue',
+    textAlign: 'center',
+  },
+  shuffleButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 25,
+    marginTop: 20,
+  },
+  shuffleButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 
