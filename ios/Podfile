@@ -15,6 +15,10 @@ if linkage != nil
 end
 
 target 'RoleTheCredits' do
+  pod 'FirebaseCore', :modular_headers => true;
+  pod 'GoogleUtilities', :modular_headers => true;
+  pod 'FirebaseAuth', :modular_headers => true;
+  pod 'ReactNativeNavigation', :path => '../node_modules/react-native-navigation'
   config = use_native_modules!
 
   use_react_native!(
