@@ -54,22 +54,18 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
   };
 
   const loadMovies = async () => {
-    setLoading(true);
+    setLoading(true); // Start loading
     const movie1 = await fetchRandomMovie();
     const movie2 = await fetchRandomMovie();
     if (movie1 && movie2) {
       setMovies([movie1, movie2]);
     }
-    setLoading(false);
+    setLoading(false); // End loading
   };
 
   useEffect(() => {
     loadMovies();
   }, []);
-
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
 
   const renderMovie = ({ item, index }: { item: Movie; index: number }) => (
     <View style={styles.movieContainer}>
@@ -104,13 +100,17 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.moviesRow}>
-        {movies.map((movie, index) => (
-          <View key={index} style={styles.movieWrapper}>
-            {renderMovie({ item: movie, index })}
-          </View>
-        ))}
-      </View>
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <View style={styles.moviesRow}>
+          {movies.map((movie, index) => (
+            <View key={index} style={styles.movieWrapper}>
+              {renderMovie({ item: movie, index })}
+            </View>
+          ))}
+        </View>
+      )}
       <TouchableOpacity style={styles.shuffleButton} onPress={loadMovies}>
         <Text style={styles.shuffleButtonText}>Shuffle</Text>
       </TouchableOpacity>
@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
+    paddingBottom: 60, // Add padding to accommodate the shuffle button
   },
   movieWrapper: {
     flex: 1,
@@ -168,11 +169,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   shuffleButton: {
+    position: 'absolute',
+    bottom: 20, // Position the button at the bottom of the screen
     backgroundColor: '#4CAF50',
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 25,
-    marginTop: 20,
+    alignSelf: 'center',
   },
   shuffleButtonText: {
     color: '#FFFFFF',
