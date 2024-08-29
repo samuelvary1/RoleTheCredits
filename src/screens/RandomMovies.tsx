@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { TMDB_API_KEY } from '@env';
 
@@ -16,7 +15,7 @@ type Movie = {
   id: number;
   title: string;
   posterPath: string;
-  actors: { name: string; id: number }[];
+  actors: { name: string; id: number; profilePath: string }[];
 };
 
 const RandomMovies: React.FC<Props> = ({ navigation }) => {
@@ -40,6 +39,7 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
       const topActors = creditsResponse.data.cast.slice(0, 10).map((actor: any) => ({
         name: actor.name,
         id: actor.id,
+        profilePath: actor.profile_path, // Get actor's profile image path
       }));
 
       return {
@@ -84,7 +84,18 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
         data={item.actors}
         keyExtractor={(actor) => actor.id.toString()}
         renderItem={({ item: actor }) => (
-          <Text style={styles.actor}>{actor.name}</Text>
+          <TouchableOpacity
+            style={styles.actorTouchable}
+            onPress={() =>
+              navigation.navigate('ActorMoviesScreen', {
+                actorId: actor.id,
+                actorName: actor.name,
+                actorImageUrl: `https://image.tmdb.org/t/p/w200${actor.profilePath}`,
+              })
+            }
+          >
+            <Text style={styles.actor}>{actor.name}</Text>
+          </TouchableOpacity>
         )}
       />
     </View>
@@ -147,9 +158,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: 'center',
   },
+  actorTouchable: {
+    marginVertical: 2,
+  },
   actor: {
     fontSize: 14,
-    marginVertical: 2,
+    color: '#007BFF',
     textAlign: 'center',
   },
   shuffleButton: {
