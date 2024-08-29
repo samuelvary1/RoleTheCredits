@@ -4,6 +4,7 @@ import axios from 'axios';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { TMDB_API_KEY } from '@env';
 
 type RandomMoviesNavigationProp = StackNavigationProp<RootStackParamList, 'RandomMovies'>;
 
@@ -18,6 +19,8 @@ type Movie = {
   actors: { name: string; id: number }[];
 };
 
+console.log(TMDB_API_KEY);
+
 const RandomMovies: React.FC<Props> = ({ navigation }) => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -26,14 +29,14 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
     try {
       const randomPage = Math.floor(Math.random() * 500) + 1;
       const movieResponse = await axios.get(
-        `https://api.themoviedb.org/3/discover/movie?api_key=YOUR_API_KEY&language=en-US&page=${randomPage}`
+        `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&language=en-US&page=${randomPage}`
       );
 
       const randomMovieIndex = Math.floor(Math.random() * movieResponse.data.results.length);
       const movie = movieResponse.data.results[randomMovieIndex];
 
       const creditsResponse = await axios.get(
-        `https://api.themoviedb.org/3/movie/${movie.id}/credits?api_key=YOUR_API_KEY&language=en-US`
+        `https://api.themoviedb.org/3/movie/${movie.id}/credits?api_key=${TMDB_API_KEY}&language=en-US`
       );
 
       const topActors = creditsResponse.data.cast.slice(0, 10).map((actor: any) => ({
