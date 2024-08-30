@@ -68,6 +68,10 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
     // Additional win logic can be added here
   };
 
+  const handleStartOver = () => {
+    navigation.navigate('RandomMovies');
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Connect {progress.startNode.title} to {progress.targetNode.title}</Text>
@@ -97,6 +101,11 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
         onPress={() => navigateToNode({ id: 3, title: 'Next Movie', type: 'movie' })} // Example next node
       >
         <Text style={styles.navigateButtonText}>Go to Next Node</Text>
+      </TouchableOpacity>
+
+      {/* Start Over Button */}
+      <TouchableOpacity style={styles.startOverButton} onPress={handleStartOver}>
+        <Text style={styles.startOverButtonText}>Start Over</Text>
       </TouchableOpacity>
     </View>
   );
@@ -144,6 +153,19 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   navigateButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  startOverButton: {
+    backgroundColor: '#FF5733',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 25,
+    marginTop: 20,
+  },
+  startOverButtonText: {
     color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',

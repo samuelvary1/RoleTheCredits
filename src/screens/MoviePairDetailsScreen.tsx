@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, FlatList, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, SectionList } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { Movie } from '../types';
 
 type MoviePairDetailsNavigationProp = StackNavigationProp<RootStackParamList, 'MoviePairDetailsScreen'>;
 type MoviePairDetailsRouteProp = RouteProp<RootStackParamList, 'MoviePairDetailsScreen'>;
@@ -12,39 +13,52 @@ type Props = {
   route: MoviePairDetailsRouteProp;
 };
 
-const MoviePairDetailsScreen: React.FC<Props> = ({ route }) => {
+const MoviePairDetailsScreen: React.FC<Props> = ({ route, navigation }) => {
   const { movieA, movieB } = route.params;
 
-  const renderActors = (actors: { name: string; id: number; profilePath: string }[]) => (
-    <FlatList
-      data={actors}
-      keyExtractor={(actor) => actor.id.toString()}
-      renderItem={({ item }) => (
-        <View style={styles.actorContainer}>
-          <Image source={{ uri: `https://image.tmdb.org/t/p/w200${item.profilePath}` }} style={styles.actorImage} />
-          <Text style={styles.actorName}>{item.name}</Text>
+  const sections = [
+    { title: 'Movies', data: [{ type: 'movies', movies: [movieA, movieB] }] },
+  ];
+
+  const renderItem = ({ item }: { item: any }) => {
+    if (item.type === 'movies') {
+      return (
+        <View style={styles.moviesContainer}>
+          {item.movies.map((movie: Movie, index: number) => (
+            <View key={index} style={styles.movieContainer}>
+              <Image source={{ uri: `https://image.tmdb.org/t/p/w500${movie.posterPath}` }} style={styles.poster} />
+              <Text style={styles.movieTitle}>{movie.title}</Text>
+              <Text style={styles.subtitle}>Top 10 Actors:</Text>
+              {movie.actors.map((actor) => (
+                <View key={actor.id} style={styles.actorContainer}>
+                  <Image source={{ uri: `https://image.tmdb.org/t/p/w200${actor.profilePath}` }} style={styles.actorImage} />
+                  <Text style={styles.actorName}>{actor.name}</Text>
+                </View>
+              ))}
+            </View>
+          ))}
         </View>
-      )}
-    />
-  );
+      );
+    }
+    return null;
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Movie Pair Details</Text>
-      <View style={styles.moviePair}>
-        <View style={styles.movieContainer}>
-          <Image source={{ uri: `https://image.tmdb.org/t/p/w500${movieA.posterPath}` }} style={styles.poster} />
-          <Text style={styles.movieTitle}>{movieA.title}</Text>
-          <Text style={styles.subtitle}>Top 10 Actors:</Text>
-          {renderActors(movieA.actors)}
-        </View>
-        <View style={styles.movieContainer}>
-          <Image source={{ uri: `https://image.tmdb.org/t/p/w500${movieB.posterPath}` }} style={styles.poster} />
-          <Text style={styles.movieTitle}>{movieB.title}</Text>
-          <Text style={styles.subtitle}>Top 10 Actors:</Text>
-          {renderActors(movieB.actors)}
-        </View>
-      </View>
+      {/* Floating Back to Game Button */}
+      <TouchableOpacity
+        style={styles.backToGameButton}
+        onPress={() => navigation.navigate('GameScreen', { movieA, movieB })}
+      >
+        <Text style={styles.backToGameButtonText}>Back to Game</Text>
+      </TouchableOpacity>
+
+      <SectionList
+        sections={sections}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => `${item.type}-${index}`}
+        contentContainerStyle={styles.sectionListContainer}
+      />
     </View>
   );
 };
@@ -54,15 +68,13 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
+  sectionListContainer: {
+    paddingTop: 60, // Add padding to make space for the floating button
   },
-  moviePair: {
+  moviesContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    width: '100%',
   },
   movieContainer: {
     flex: 1,
@@ -98,6 +110,23 @@ const styles = StyleSheet.create({
   },
   actorName: {
     fontSize: 14,
+    textAlign: 'center',
+  },
+  backToGameButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    right: 20,
+    backgroundColor: '#FF5733',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 25,
+    zIndex: 10, // Ensure the button stays on top
+  },
+  backToGameButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
     textAlign: 'center',
   },
 });
