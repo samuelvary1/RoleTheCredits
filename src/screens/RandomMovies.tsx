@@ -67,53 +67,53 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
     loadMovies();
   }, []);
 
-  const renderMovie = ({ item, index }: { item: Movie; index: number }) => (
-    <View style={styles.movieContainer}>
-      <Text style={styles.movieTitle}>{index === 0 ? 'Movie A' : 'Movie B'}</Text>
-      <Image
-        source={{ uri: `https://image.tmdb.org/t/p/w500${item.posterPath}` }}
-        style={styles.poster}
-      />
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.subtitle}>Top 10 Actors:</Text>
-      <FlatList
-        data={item.actors}
-        keyExtractor={(actor) => actor.id.toString()}
-        renderItem={({ item: actor }) => (
-          <TouchableOpacity
-            style={styles.actorTouchable}
-            onPress={() =>
-              navigation.navigate('ActorMoviesScreen', {
-                actorId: actor.id,
-                actorName: actor.name,
-                actorImageUrl: `https://image.tmdb.org/t/p/w200${actor.profilePath}`,
-                movieB: movies[1], // Pass Movie B information (index 1 is Movie B)
-              })
-            }
-          >
-            <Text style={styles.actor}>{actor.name}</Text>
-          </TouchableOpacity>
-        )}
-      />
-    </View>
-  );
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
 
   return (
     <View style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <View style={styles.moviesRow}>
-          {movies.map((movie, index) => (
-            <View key={index} style={styles.movieWrapper}>
-              {renderMovie({ item: movie, index })}
+      <View style={styles.moviesRow}>
+        {movies.map((movie, index) => (
+          <View key={index} style={styles.movieWrapper}>
+            <View style={styles.movieContainer}>
+              <Text style={styles.movieTitle}>{index === 0 ? 'Movie A' : 'Movie B'}</Text>
+              <Image
+                source={{ uri: `https://image.tmdb.org/t/p/w500${movie.posterPath}` }}
+                style={styles.poster}
+              />
+              <Text style={styles.title}>{movie.title}</Text>
+              <Text style={styles.subtitle}>Top 10 Actors:</Text>
+              <FlatList
+                data={movie.actors}
+                keyExtractor={(actor) => actor.id.toString()}
+                renderItem={({ item: actor }) => (
+                  <Text style={styles.actor}>{actor.name}</Text>
+                )}
+              />
             </View>
-          ))}
-        </View>
-      )}
-      <TouchableOpacity style={styles.shuffleButton} onPress={loadMovies}>
-        <Text style={styles.shuffleButtonText}>Shuffle</Text>
-      </TouchableOpacity>
+          </View>
+        ))}
+      </View>
+
+      {/* Buttons Container */}
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity
+          style={styles.startGameButton}
+          onPress={() =>
+            navigation.navigate('GameScreen', {
+              movieA: movies[0], // Pass Movie A to GameScreen
+              movieB: movies[1], // Pass Movie B to GameScreen
+            })
+          }
+        >
+          <Text style={styles.startGameButtonText}>Start Game</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.shuffleButton} onPress={loadMovies}>
+          <Text style={styles.shuffleButtonText}>Shuffle</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    paddingBottom: 60, // Add padding to accommodate the shuffle button
+    paddingBottom: 60, // Add padding to accommodate the buttons
   },
   movieWrapper: {
     flex: 1,
@@ -160,22 +160,40 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: 'center',
   },
-  actorTouchable: {
-    marginVertical: 2,
-  },
   actor: {
     fontSize: 14,
     color: '#007BFF',
     textAlign: 'center',
   },
+  // Buttons Container
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+    width: '100%',
+    paddingHorizontal: 20,
+  },
+  startGameButton: {
+    backgroundColor: '#FF5733',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 25,
+    flex: 1,
+    marginRight: 10, // Space between the buttons
+  },
+  startGameButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
   shuffleButton: {
-    position: 'absolute',
-    bottom: 20, // Position the button at the bottom of the screen
     backgroundColor: '#4CAF50',
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 25,
-    alignSelf: 'center',
+    flex: 1,
+    marginLeft: 10, // Space between the buttons
   },
   shuffleButtonText: {
     color: '#FFFFFF',
