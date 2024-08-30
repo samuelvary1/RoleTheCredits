@@ -106,7 +106,7 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
       const response = await axios.get(
         `https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${TMDB_API_KEY}&language=en-US`
       );
-      const actors = response.data.cast.slice(0, 10).map((actor: any, index: number) => ({
+      const actors = response.data.cast.slice(0, 10).map((actor: any) => ({
         id: actor.id,
         name: actor.name,
         profilePath: actor.profile_path,
@@ -136,7 +136,7 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
     navigation.navigate('ConnectionPathScreen', {
       path,
       startNode: path[0],
-      targetNode: { ...movieB, type: 'movie', side: 'B' },  // Ensure movieB is the target node
+      targetNode: { ...movieB, type: 'movie', side: 'B' },
       moves: path.length,
     });
   };
@@ -149,7 +149,6 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.moviesRow}>
-          {/* Movie A side */}
           <View style={styles.movieContainer}>
             <Text style={styles.movieLabel}>
               {selectedActorA ? selectedActorA.name : currentMovieA.title}
@@ -174,7 +173,7 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
               <ScrollView>
                 {actorMoviesA.map((item, index) => (
                   <TouchableOpacity
-                    key={`A-${item.id}-${index}`} // Unique key by combining side, id, and index
+                    key={`A-${item.id}-${index}`} 
                     style={styles.actorContainer}
                     onPress={() => handleMoviePress(item.id, item.title, item.posterPath, 'A')}
                   >
@@ -186,7 +185,7 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
               <ScrollView>
                 {currentActorsA.map((actor, index) => (
                   <TouchableOpacity
-                    key={`A-${actor.id}-${index}`} // Unique key by combining side, id, and index
+                    key={`A-${actor.id}-${index}`} 
                     style={styles.actorContainer}
                     onPress={() => handleActorPress(actor.id, actor.name, 'A')}
                   >
@@ -197,7 +196,6 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
             )}
           </View>
 
-          {/* Movie B side */}
           <View style={styles.movieContainer}>
             <Text style={styles.movieLabel}>
               {selectedActorB ? selectedActorB.name : currentMovieB.title}
@@ -222,7 +220,7 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
               <ScrollView>
                 {actorMoviesB.map((item, index) => (
                   <TouchableOpacity
-                    key={`B-${item.id}-${index}`} // Unique key by combining side, id, and index
+                    key={`B-${item.id}-${index}`} 
                     style={styles.actorContainer}
                     onPress={() => handleMoviePress(item.id, item.title, item.posterPath, 'B')}
                   >
@@ -234,7 +232,7 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
               <ScrollView>
                 {currentActorsB.map((actor, index) => (
                   <TouchableOpacity
-                    key={`B-${actor.id}-${index}`} // Unique key by combining side, id, and index
+                    key={`B-${actor.id}-${index}`} 
                     style={styles.actorContainer}
                     onPress={() => handleActorPress(actor.id, actor.name, 'B')}
                   >
@@ -246,18 +244,16 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
           </View>
         </View>
 
-        {/* Confirm Connection Button */}
         {showConfirmButton && (
           <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmConnection}>
             <Text style={styles.confirmButtonText}>Confirm Connection!</Text>
           </TouchableOpacity>
         )}
-
-        {/* Start Over Button */}
-        <TouchableOpacity style={styles.startOverButton} onPress={handleStartOver}>
-          <Text style={styles.startOverButtonText}>Start Over</Text>
-        </TouchableOpacity>
       </ScrollView>
+
+      <TouchableOpacity style={styles.startOverButton} onPress={handleStartOver}>
+        <Text style={styles.startOverButtonText}>Start Over</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -320,11 +316,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   startOverButton: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
     backgroundColor: '#4CAF50',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 25,
-    marginTop: 10,
     alignSelf: 'center',
   },
   startOverButtonText: {
