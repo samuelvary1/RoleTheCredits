@@ -1,21 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { TMDB_API_KEY } from '@env';
+import { Movie } from '../types';
 
 type RandomMoviesNavigationProp = StackNavigationProp<RootStackParamList, 'RandomMovies'>;
 
 type Props = {
   navigation: RandomMoviesNavigationProp;
-};
-
-type Movie = {
-  id: number;
-  title: string;
-  posterPath: string;
-  actors: { name: string; id: number; profilePath: string }[];
 };
 
 const RandomMovies: React.FC<Props> = ({ navigation }) => {
@@ -39,7 +33,6 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
       const topActors = creditsResponse.data.cast.slice(0, 10).map((actor: any) => ({
         name: actor.name,
         id: actor.id,
-        profilePath: actor.profile_path,
       }));
 
       return {
@@ -54,13 +47,22 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
   };
 
   const loadMovies = async () => {
-    setLoading(true); // Start loading
+    setLoading(true);
     const movie1 = await fetchRandomMovie();
     const movie2 = await fetchRandomMovie();
     if (movie1 && movie2) {
       setMovies([movie1, movie2]);
     }
-    setLoading(false); // End loading
+    setLoading(false);
+  };
+
+  const handleStartGame = () => {
+    if (movies.length === 2) {
+      navigation.navigate('GameScreen', {
+        movieA: movies[0],
+        movieB: movies[1],
+      });
+    }
   };
 
   useEffect(() => {
@@ -72,132 +74,97 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.moviesRow}>
         {movies.map((movie, index) => (
-          <View key={index} style={styles.movieWrapper}>
-            <View style={styles.movieContainer}>
-              <Text style={styles.movieTitle}>{index === 0 ? 'Movie A' : 'Movie B'}</Text>
-              <Image
-                source={{ uri: `https://image.tmdb.org/t/p/w500${movie.posterPath}` }}
-                style={styles.poster}
-              />
-              <Text style={styles.title}>{movie.title}</Text>
-              <Text style={styles.subtitle}>Top 10 Actors:</Text>
-              <FlatList
-                data={movie.actors}
-                keyExtractor={(actor) => actor.id.toString()}
-                renderItem={({ item: actor }) => (
-                  <Text style={styles.actor}>{actor.name}</Text>
-                )}
-              />
-            </View>
+          <View key={index} style={styles.movieContainer}>
+            <Text style={styles.movieLabel}>{index === 0 ? 'Movie A' : 'Movie B'}</Text>
+            <Image
+              source={{ uri: `https://image.tmdb.org/t/p/w500${movie.posterPath}` }}
+              style={styles.poster}
+            />
+            <Text style={styles.title}>{movie.title}</Text>
+            <Text style={styles.subtitle}>Top 10 Actors:</Text>
+            {movie.actors.map(actor => (
+              <Text key={actor.id} style={styles.actor}>{actor.name}</Text>
+            ))}
           </View>
         ))}
       </View>
 
-      {/* Buttons Container */}
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity
-          style={styles.startGameButton}
-          onPress={() =>
-            navigation.navigate('GameScreen', {
-              movieA: movies[0], // Pass Movie A to GameScreen
-              movieB: movies[1], // Pass Movie B to GameScreen
-            })
-          }
-        >
-          <Text style={styles.startGameButtonText}>Start Game</Text>
-        </TouchableOpacity>
-
         <TouchableOpacity style={styles.shuffleButton} onPress={loadMovies}>
-          <Text style={styles.shuffleButtonText}>Shuffle</Text>
+          <Text style={styles.buttonText}>Shuffle</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.startGameButton} onPress={handleStartGame}>
+          <Text style={styles.buttonText}>Start Game</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: 10,
+    paddingBottom: 20,
   },
   moviesRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%',
-    paddingBottom: 60, // Add padding to accommodate the buttons
-  },
-  movieWrapper: {
-    flex: 1,
-    marginHorizontal: 10,
+    marginBottom: 10,
   },
   movieContainer: {
+    flex: 1,
     alignItems: 'center',
+    marginHorizontal: 5,
   },
-  movieTitle: {
-    fontSize: 20,
+  movieLabel: {
+    fontSize: 14,
     fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'center',
+    marginBottom: 3,
   },
   poster: {
-    width: 150,
-    height: 225,
-    marginBottom: 10,
+    width: 100,
+    height: 150,
+    marginBottom: 5,
   },
   title: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 5,
   },
   subtitle: {
-    fontSize: 16,
-    marginTop: 10,
+    fontSize: 12,
+    marginBottom: 3,
     textAlign: 'center',
   },
   actor: {
-    fontSize: 14,
-    color: '#007BFF',
+    fontSize: 12,
+    marginVertical: 1,
     textAlign: 'center',
   },
-  // Buttons Container
   buttonsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-    width: '100%',
-    paddingHorizontal: 20,
-  },
-  startGameButton: {
-    backgroundColor: '#FF5733',
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 25,
-    flex: 1,
-    marginRight: 10, // Space between the buttons
-  },
-  startGameButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    justifyContent: 'space-around',
+    marginTop: 10,
   },
   shuffleButton: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 25,
-    flex: 1,
-    marginLeft: 10, // Space between the buttons
+    backgroundColor: '#007BFF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
   },
-  shuffleButtonText: {
+  startGameButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+  },
+  buttonText: {
     color: '#FFFFFF',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
   },

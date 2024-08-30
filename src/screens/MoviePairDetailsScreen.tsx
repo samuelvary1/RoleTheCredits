@@ -1,64 +1,77 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, SectionList } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
-import { Movie } from '../types';
+import { Actor } from '../types';
 
-type MoviePairDetailsNavigationProp = StackNavigationProp<RootStackParamList, 'MoviePairDetailsScreen'>;
-type MoviePairDetailsRouteProp = RouteProp<RootStackParamList, 'MoviePairDetailsScreen'>;
+type MoviePairDetailsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'MoviePairDetailsScreen'>;
+type MoviePairDetailsScreenRouteProp = RouteProp<RootStackParamList, 'MoviePairDetailsScreen'>;
 
 type Props = {
-  navigation: MoviePairDetailsNavigationProp;
-  route: MoviePairDetailsRouteProp;
+  navigation: MoviePairDetailsScreenNavigationProp;
+  route: MoviePairDetailsScreenRouteProp;
 };
 
-const MoviePairDetailsScreen: React.FC<Props> = ({ route, navigation }) => {
+const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
   const { movieA, movieB } = route.params;
 
-  const sections = [
-    { title: 'Movies', data: [{ type: 'movies', movies: [movieA, movieB] }] },
-  ];
-
-  const renderItem = ({ item }: { item: any }) => {
-    if (item.type === 'movies') {
-      return (
-        <View style={styles.moviesContainer}>
-          {item.movies.map((movie: Movie, index: number) => (
-            <View key={index} style={styles.movieContainer}>
-              <Image source={{ uri: `https://image.tmdb.org/t/p/w500${movie.posterPath}` }} style={styles.poster} />
-              <Text style={styles.movieTitle}>{movie.title}</Text>
-              <Text style={styles.subtitle}>Top 10 Actors:</Text>
-              {movie.actors.map((actor) => (
-                <View key={actor.id} style={styles.actorContainer}>
-                  <Image source={{ uri: `https://image.tmdb.org/t/p/w200${actor.profilePath}` }} style={styles.actorImage} />
-                  <Text style={styles.actorName}>{actor.name}</Text>
-                </View>
-              ))}
-            </View>
-          ))}
-        </View>
-      );
-    }
-    return null;
+  const handleActorPress = (actorId: number, actorName: string) => {
+    navigation.navigate('ActorMoviesScreen', {
+      actorId,
+      actorName,
+      movieA, // Pass Movie A for context in ActorMoviesScreen
+      movieB, // Pass Movie B as part of the ongoing game
+    });
   };
 
   return (
     <View style={styles.container}>
-      {/* Floating Back to Game Button */}
-      <TouchableOpacity
-        style={styles.backToGameButton}
-        onPress={() => navigation.navigate('GameScreen', { movieA, movieB })}
-      >
-        <Text style={styles.backToGameButtonText}>Back to Game</Text>
-      </TouchableOpacity>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.moviesRow}>
+          <View style={styles.movieContainer}>
+            <Text style={styles.movieLabel}>Movie A</Text>
+            <Image
+              source={{ uri: `https://image.tmdb.org/t/p/w500${movieA.posterPath}` }}
+              style={styles.poster}
+            />
+            <Text style={styles.title}>{movieA.title}</Text>
+            <Text style={styles.subtitle}>Top 10 Actors:</Text>
+            {movieA.actors.map(actor => (
+              <TouchableOpacity
+                key={actor.id}
+                style={styles.actorContainer}
+                onPress={() => handleActorPress(actor.id, actor.name)}
+              >
+                <Text style={styles.actorName}>{actor.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
 
-      <SectionList
-        sections={sections}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => `${item.type}-${index}`}
-        contentContainerStyle={styles.sectionListContainer}
-      />
+          <View style={styles.movieContainer}>
+            <Text style={styles.movieLabel}>Movie B</Text>
+            <Image
+              source={{ uri: `https://image.tmdb.org/t/p/w500${movieB.posterPath}` }}
+              style={styles.poster}
+            />
+            <Text style={styles.title}>{movieB.title}</Text>
+            <Text style={styles.subtitle}>Top 10 Actors:</Text>
+            {movieB.actors.map(actor => (
+              <TouchableOpacity
+                key={actor.id}
+                style={styles.actorContainer}
+                onPress={() => handleActorPress(actor.id, actor.name)}
+              >
+                <Text style={styles.actorName}>{actor.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </ScrollView>
+
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Text style={styles.backButtonText}>Back to Game</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -66,68 +79,63 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
   },
-  sectionListContainer: {
-    paddingTop: 60, // Add padding to make space for the floating button
+  scrollViewContent: {
+    padding: 10,
+    paddingBottom: 70, // Adjusted padding to ensure all content is accessible
   },
-  moviesContainer: {
+  moviesRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%',
+    marginBottom: 10,
   },
   movieContainer: {
     flex: 1,
     alignItems: 'center',
-    marginHorizontal: 10,
+    marginHorizontal: 5,
+  },
+  movieLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 3,
   },
   poster: {
-    width: 150,
-    height: 225,
-    marginBottom: 10,
+    width: 120,
+    height: 180,
+    marginBottom: 5,
   },
-  movieTitle: {
-    fontSize: 18,
+  title: {
+    fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 5,
   },
   subtitle: {
-    fontSize: 16,
-    marginTop: 10,
-    marginBottom: 5,
+    fontSize: 12,
+    marginBottom: 3,
     textAlign: 'center',
   },
   actorContainer: {
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  actorImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 5,
+    marginBottom: 8,
   },
   actorName: {
-    fontSize: 14,
+    fontSize: 12,
     textAlign: 'center',
   },
-  backToGameButton: {
+  backButton: {
     position: 'absolute',
-    top: 20,
-    left: 20,
-    right: 20,
-    backgroundColor: '#FF5733',
+    bottom: 15,
+    left: 15,
+    right: 15,
+    backgroundColor: '#007BFF',
     paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 25,
-    zIndex: 10, // Ensure the button stays on top
+    borderRadius: 20,
+    alignItems: 'center',
   },
-  backToGameButtonText: {
+  backButtonText: {
     color: '#FFFFFF',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
   },
 });
 

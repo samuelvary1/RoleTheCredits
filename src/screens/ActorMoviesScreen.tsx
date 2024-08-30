@@ -6,6 +6,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { TMDB_API_KEY } from '@env';
+import { Actor, Movie } from '../types';
 
 type ActorMoviesNavigationProp = StackNavigationProp<RootStackParamList, 'ActorMoviesScreen'>;
 type ActorMoviesRouteProp = RouteProp<RootStackParamList, 'ActorMoviesScreen'>;
@@ -15,19 +16,12 @@ type Props = {
   route: ActorMoviesRouteProp;
 };
 
-type Movie = {
-  id: number;
-  title: string;
-  posterPath: string;
-  releaseYear: string;
-};
-
 const ActorMoviesScreen: React.FC<Props> = ({ route, navigation }) => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [showTargetMovie, setShowTargetMovie] = useState<boolean>(false);
 
-  const { actorId, actorName, actorImageUrl, movieB } = route.params;
+  const { actorId, actorName, actorImageUrl, movieA, movieB } = route.params;
 
   useEffect(() => {
     const fetchActorMovies = async () => {
@@ -41,6 +35,8 @@ const ActorMoviesScreen: React.FC<Props> = ({ route, navigation }) => {
           posterPath: movie.poster_path,
           releaseYear: movie.release_date ? movie.release_date.split('-')[0] : 'N/A',
         }));
+
+        console.log(response.data);
 
         // Sort the movies in reverse chronological order (most recent first)
         const sortedMovies = moviesData.sort((a: { releaseYear: string; }, b: { releaseYear: string; }) => {
@@ -93,6 +89,8 @@ const ActorMoviesScreen: React.FC<Props> = ({ route, navigation }) => {
                 movieId: item.id,
                 movieTitle: item.title,
                 moviePoster: item.posterPath,
+                movieActors: item.actors,
+                movieA: movieA,
                 movieB: movieB, // Pass Movie B along
               })
             }

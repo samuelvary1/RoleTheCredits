@@ -8,7 +8,7 @@ import MovieDetailsScreen from '../screens/MovieDetailsScreen';
 import LockedInPairScreen from '../screens/LockedInPairScreen';
 import GameScreen from '../screens/GameScreen';
 import MoviePairDetailsScreen from '../screens/MoviePairDetailsScreen';
-import { Movie } from '../types';
+import { Actor, Movie } from '../types';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -17,14 +17,17 @@ export type RootStackParamList = {
   ActorMoviesScreen: {
     actorId: number;
     actorName: string;
-    actorImageUrl: string;
-    movieB: { id: number; title: string; posterPath: string };
+    actorImageUrl?: string;
+    movieA: Movie;
+    movieB: Movie;
   };
   MovieDetailsScreen: {
     movieId: number;
     movieTitle: string;
     moviePoster: string;
-    movieB: { id: number; title: string; posterPath: string };
+    movieActors: Actor[];
+    movieA: Movie;
+    movieB: Movie;
   };
   LockedInPairScreen: {
     movieA: Movie;
