@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, ActivityIndicator } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -16,61 +16,66 @@ type Props = {
 };
 
 const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
-  const { movieA, movieB } = route.params;
+  const {
+    movieA = { id: 0, title: 'Unknown Movie A', posterPath: '', actors: [] },
+    movieB = { id: 0, title: 'Unknown Movie B', posterPath: '', actors: [] },
+    selectedActorA: prevSelectedActorA = null,
+    selectedActorB: prevSelectedActorB = null,
+    currentMovieA: prevCurrentMovieA = null,
+    currentMovieB: prevCurrentMovieB = null,
+  } = route.params;
 
-  const [selectedActorA, setSelectedActorA] = useState<Actor | null>(null);
-  const [selectedActorB, setSelectedActorB] = useState<Actor | null>(null);
+  const [selectedActorA, setSelectedActorA] = useState<Actor | null>(prevSelectedActorA);
+  const [selectedActorB, setSelectedActorB] = useState<Actor | null>(prevSelectedActorB);
   const [actorMoviesA, setActorMoviesA] = useState<Movie[]>([]);
   const [actorMoviesB, setActorMoviesB] = useState<Movie[]>([]);
-  const [currentMovieA, setCurrentMovieA] = useState<Movie | null>(movieA);
-  const [currentMovieB, setCurrentMovieB] = useState<Movie | null>(movieB);
-  const [currentActorsA, setCurrentActorsA] = useState<Actor[]>(movieA.actors);
-  const [currentActorsB, setCurrentActorsB] = useState<Actor[]>(movieB.actors);
+  const [currentMovieA, setCurrentMovieA] = useState<Movie>(prevCurrentMovieA || movieA);
+  const [currentMovieB, setCurrentMovieB] = useState<Movie>(prevCurrentMovieB || movieB);
+  const [currentActorsA, setCurrentActorsA] = useState<Actor[]>(prevCurrentMovieA?.actors || movieA.actors);
+  const [currentActorsB, setCurrentActorsB] = useState<Actor[]>(prevCurrentMovieB?.actors || movieB.actors);
   const [loadingA, setLoadingA] = useState<boolean>(false);
   const [loadingB, setLoadingB] = useState<boolean>(false);
 
   const handleActorPress = async (actorId: number, actorName: string, fromMovie: 'A' | 'B') => {
     if (fromMovie === 'A') {
-        setLoadingA(true);
+      setLoadingA(true);
     } else {
-        setLoadingB(true);
+      setLoadingB(true);
     }
 
     try {
-        // Fetch actor details to get the profile path
-        const actorResponse = await axios.get(
-            `https://api.themoviedb.org/3/person/${actorId}?api_key=${TMDB_API_KEY}&language=en-US`
-        );
-        const profilePath = actorResponse.data.profile_path;
+      const actorResponse = await axios.get(
+        `https://api.themoviedb.org/3/person/${actorId}?api_key=${TMDB_API_KEY}&language=en-US`
+      );
+      const profilePath = actorResponse.data.profile_path;
 
-        if (fromMovie === 'A') {
-            setSelectedActorA({ id: actorId, name: actorName, profilePath });
-            setLoadingA(false);
-        } else {
-            setSelectedActorB({ id: actorId, name: actorName, profilePath });
-            setLoadingB(false);
-        }
-
-        // Fetch the actor's movies
-        const moviesResponse = await axios.get(
-            `https://api.themoviedb.org/3/person/${actorId}/movie_credits?api_key=${TMDB_API_KEY}&language=en-US`
-        );
-        const movies = moviesResponse.data.cast.map((movie: any) => ({
-            id: movie.id,
-            title: movie.title,
-            posterPath: movie.poster_path,
-            releaseDate: movie.release_date,
-        }));
-
-        if (fromMovie === 'A') {
-            setActorMoviesA(movies);
-        } else {
-            setActorMoviesB(movies);
-        }
-    } catch (error) {
-        console.error('Error fetching actor details or movies:', error);
+      if (fromMovie === 'A') {
+        setSelectedActorA({ id: actorId, name: actorName, profilePath });
         setLoadingA(false);
+      } else {
+        setSelectedActorB({ id: actorId, name: actorName, profilePath });
         setLoadingB(false);
+      }
+
+      const moviesResponse = await axios.get(
+        `https://api.themoviedb.org/3/person/${actorId}/movie_credits?api_key=${TMDB_API_KEY}&language=en-US`
+      );
+      const movies = moviesResponse.data.cast.map((movie: any) => ({
+        id: movie.id,
+        title: movie.title,
+        posterPath: movie.poster_path,
+        releaseDate: movie.release_date,
+      }));
+
+      if (fromMovie === 'A') {
+        setActorMoviesA(movies);
+      } else {
+        setActorMoviesB(movies);
+      }
+    } catch (error) {
+      console.error('Error fetching actor details or movies:', error);
+      setLoadingA(false);
+      setLoadingB(false);
     }
   };
 
@@ -109,6 +114,10 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
 
+  const handleStartOver = () => {
+    navigation.navigate('RandomMovies');
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
@@ -116,12 +125,12 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
           {/* Movie A side */}
           <View style={styles.movieContainer}>
             <Text style={styles.movieLabel}>
-              {selectedActorA ? selectedActorA.name : currentMovieA!.title}
+              {selectedActorA ? selectedActorA.name : currentMovieA.title}
             </Text>
             <Image
               source={{ uri: selectedActorA?.profilePath
                 ? `https://image.tmdb.org/t/p/w500${selectedActorA.profilePath}`
-                : `https://image.tmdb.org/t/p/w500${currentMovieA!.posterPath}` }}
+                : `https://image.tmdb.org/t/p/w500${currentMovieA.posterPath}` }}
               style={styles.poster}
             />
             <Text style={styles.title}>
@@ -133,37 +142,37 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
             {loadingA ? (
               <ActivityIndicator size="large" color="#0000ff" />
             ) : selectedActorA ? (
-              <FlatList
-                data={actorMoviesA}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                  <TouchableOpacity style={styles.actorContainer} onPress={() => handleMoviePress(item.id, item.title, item.posterPath, 'A')}>
+              <ScrollView>
+                {actorMoviesA.map((item) => (
+                  <TouchableOpacity key={item.id} style={styles.actorContainer} onPress={() => handleMoviePress(item.id, item.title, item.posterPath, 'A')}>
                     <Text style={styles.actorName}>{item.title}</Text>
                   </TouchableOpacity>
-                )}
-              />
+                ))}
+              </ScrollView>
             ) : (
-              currentActorsA.map(actor => (
-                <TouchableOpacity
-                  key={actor.id}
-                  style={styles.actorContainer}
-                  onPress={() => handleActorPress(actor.id, actor.name, 'A')}
-                >
-                  <Text style={styles.actorName}>{actor.name}</Text>
-                </TouchableOpacity>
-              ))
+              <ScrollView>
+                {currentActorsA.map(actor => (
+                  <TouchableOpacity
+                    key={actor.id}
+                    style={styles.actorContainer}
+                    onPress={() => handleActorPress(actor.id, actor.name, 'A')}
+                  >
+                    <Text style={styles.actorName}>{actor.name}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
             )}
           </View>
 
           {/* Movie B side */}
           <View style={styles.movieContainer}>
             <Text style={styles.movieLabel}>
-              {selectedActorB ? selectedActorB.name : currentMovieB!.title}
+              {selectedActorB ? selectedActorB.name : currentMovieB.title}
             </Text>
             <Image
               source={{ uri: selectedActorB?.profilePath
                 ? `https://image.tmdb.org/t/p/w500${selectedActorB.profilePath}`
-                : `https://image.tmdb.org/t/p/w500${currentMovieB!.posterPath}` }}
+                : `https://image.tmdb.org/t/p/w500${currentMovieB.posterPath}` }}
               style={styles.poster}
             />
             <Text style={styles.title}>
@@ -175,32 +184,32 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
             {loadingB ? (
               <ActivityIndicator size="large" color="#0000ff" />
             ) : selectedActorB ? (
-              <FlatList
-                data={actorMoviesB}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                  <TouchableOpacity style={styles.actorContainer} onPress={() => handleMoviePress(item.id, item.title, item.posterPath, 'B')}>
+              <ScrollView>
+                {actorMoviesB.map((item) => (
+                  <TouchableOpacity key={item.id} style={styles.actorContainer} onPress={() => handleMoviePress(item.id, item.title, item.posterPath, 'B')}>
                     <Text style={styles.actorName}>{item.title}</Text>
                   </TouchableOpacity>
-                )}
-              />
+                ))}
+              </ScrollView>
             ) : (
-              currentActorsB.map(actor => (
-                <TouchableOpacity
-                  key={actor.id}
-                  style={styles.actorContainer}
-                  onPress={() => handleActorPress(actor.id, actor.name, 'B')}
-                >
-                  <Text style={styles.actorName}>{actor.name}</Text>
-                </TouchableOpacity>
-              ))
+              <ScrollView>
+                {currentActorsB.map(actor => (
+                  <TouchableOpacity
+                    key={actor.id}
+                    style={styles.actorContainer}
+                    onPress={() => handleActorPress(actor.id, actor.name, 'B')}
+                  >
+                    <Text style={styles.actorName}>{actor.name}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
             )}
           </View>
         </View>
       </ScrollView>
 
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>Back to Game</Text>
+      <TouchableOpacity style={styles.startOverButton} onPress={handleStartOver}>
+        <Text style={styles.startOverButtonText}>Start Over</Text>
       </TouchableOpacity>
     </View>
   );
@@ -211,13 +220,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollViewContent: {
-    padding: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
     paddingBottom: 70, // Adjusted padding to ensure all content is accessible
   },
   moviesRow: {
+    flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 10,
   },
   movieContainer: {
     flex: 1,
@@ -252,17 +262,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
   },
-  backButton: {
+  startOverButton: {
     position: 'absolute',
     bottom: 15,
     left: 15,
     right: 15,
-    backgroundColor: '#007BFF',
+    backgroundColor: '#FF5733',
     paddingVertical: 12,
     borderRadius: 20,
     alignItems: 'center',
   },
-  backButtonText: {
+  startOverButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',

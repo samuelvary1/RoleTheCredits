@@ -36,10 +36,18 @@ export type RootStackParamList = {
   GameScreen: {
     movieA: Movie;
     movieB: Movie;
+    selectedActorA?: Actor | null;
+    selectedActorB?: Actor | null;
+    currentMovieA?: Movie | null;
+    currentMovieB?: Movie | null;
   };
   MoviePairDetailsScreen: {
     movieA: Movie;
     movieB: Movie;
+    selectedActorA?: Actor | null;
+    selectedActorB?: Actor | null;
+    currentMovieA?: Movie | null;
+    currentMovieB?: Movie | null;
   };
 };
 

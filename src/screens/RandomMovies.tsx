@@ -56,9 +56,9 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
     setLoading(false);
   };
 
-  const handleStartGame = () => {
+  const handleViewPairDetails = () => {
     if (movies.length === 2) {
-      navigation.navigate('GameScreen', {
+      navigation.navigate('MoviePairDetailsScreen', {
         movieA: movies[0],
         movieB: movies[1],
       });
@@ -96,8 +96,8 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
         <TouchableOpacity style={styles.shuffleButton} onPress={loadMovies}>
           <Text style={styles.buttonText}>Shuffle</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.startGameButton} onPress={handleStartGame}>
-          <Text style={styles.buttonText}>Start Game</Text>
+        <TouchableOpacity style={styles.startGameButton} onPress={handleViewPairDetails}>
+          <Text style={styles.buttonText}>Start Game with this Pair</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

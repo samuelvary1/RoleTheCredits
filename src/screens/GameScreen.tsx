@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { Actor, Movie } from '../types';
 
 type GameScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GameScreen'>;
 type GameScreenRouteProp = RouteProp<RootStackParamList, 'GameScreen'>;
@@ -26,10 +27,21 @@ type UserProgress = {
   currentNode: PathNode;
   moves: number;
   isConnected: boolean;
+  selectedActorA?: Actor | null;
+  selectedActorB?: Actor | null;
+  currentMovieA?: Movie | null;
+  currentMovieB?: Movie | null;
 };
 
 const GameScreen: React.FC<Props> = ({ navigation, route }) => {
-  const { movieA, movieB } = route.params;
+  const {
+    movieA = { id: 0, title: 'Unknown', posterPath: '', actors: [] },
+    movieB = { id: 0, title: 'Unknown', posterPath: '', actors: [] },
+    selectedActorA,
+    selectedActorB,
+    currentMovieA,
+    currentMovieB,
+  } = route.params;
 
   const initialProgress: UserProgress = {
     path: [],
@@ -38,6 +50,10 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
     currentNode: { id: movieA.id, title: movieA.title, type: 'movie' },
     moves: 0,
     isConnected: false,
+    selectedActorA: selectedActorA || null,
+    selectedActorB: selectedActorB || null,
+    currentMovieA: currentMovieA || movieA,
+    currentMovieB: currentMovieB || movieB,
   };
 
   const [progress, setProgress] = useState<UserProgress>(initialProgress);
@@ -82,14 +98,12 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
         style={styles.detailsButton}
         onPress={() =>
           navigation.navigate('MoviePairDetailsScreen', {
-            movieA: {
-              ...movieA,
-              actors: movieA.actors, // Pass the actual actor data for Movie A
-            },
-            movieB: {
-              ...movieB,
-              actors: movieB.actors, // Pass the actual actor data for Movie B
-            },
+            movieA: progress.currentMovieA!,
+            movieB: progress.currentMovieB!,
+            selectedActorA: progress.selectedActorA,
+            selectedActorB: progress.selectedActorB,
+            currentMovieA: progress.currentMovieA,
+            currentMovieB: progress.currentMovieB,
           })
         }
       >
