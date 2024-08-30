@@ -43,16 +43,6 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
                 style={styles.actorContainer}
                 onPress={() => handleActorPress(actor.id, actor.name)}
               >
-                {actor.profilePath ? (
-                  <Image
-                    source={{ uri: `https://image.tmdb.org/t/p/w200${actor.profilePath}` }}
-                    style={styles.actorImage}
-                  />
-                ) : (
-                  <View style={styles.placeholderImage}>
-                    <Text style={styles.placeholderText}>No Image</Text>
-                  </View>
-                )}
                 <Text style={styles.actorName}>{actor.name}</Text>
               </TouchableOpacity>
             ))}
@@ -72,16 +62,6 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
                 style={styles.actorContainer}
                 onPress={() => handleActorPress(actor.id, actor.name)}
               >
-                {actor.profilePath ? (
-                  <Image
-                    source={{ uri: `https://image.tmdb.org/t/p/w200${actor.profilePath}` }}
-                    style={styles.actorImage}
-                  />
-                ) : (
-                  <View style={styles.placeholderImage}>
-                    <Text style={styles.placeholderText}>No Image</Text>
-                  </View>
-                )}
                 <Text style={styles.actorName}>{actor.name}</Text>
               </TouchableOpacity>
             ))}
@@ -136,28 +116,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   actorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
     marginBottom: 8,
-  },
-  actorImage: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    marginRight: 8,
-  },
-  placeholderImage: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: '#ccc',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 8,
-  },
-  placeholderText: {
-    fontSize: 10,
-    color: '#fff',
   },
   actorName: {
     fontSize: 12,
