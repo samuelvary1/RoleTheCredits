@@ -81,7 +81,6 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
         title: movie.title,
         posterPath: movie.poster_path,
         releaseDate: movie.release_date,
-        key: `${movie.id}-${index}`,
       }));
 
       if (fromMovie === 'A') {
@@ -111,7 +110,6 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
         id: actor.id,
         name: actor.name,
         profilePath: actor.profile_path,
-        key: `${actor.id}-${index}`,
       }));
 
       if (fromMovie === 'A') {
@@ -174,9 +172,9 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
               <ActivityIndicator size="large" color="#0000ff" />
             ) : selectedActorA ? (
               <ScrollView>
-                {actorMoviesA.map((item) => (
+                {actorMoviesA.map((item, index) => (
                   <TouchableOpacity
-                    key={item.id}
+                    key={`A-${item.id}-${index}`} // Unique key by combining side, id, and index
                     style={styles.actorContainer}
                     onPress={() => handleMoviePress(item.id, item.title, item.posterPath, 'A')}
                   >
@@ -186,9 +184,9 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
               </ScrollView>
             ) : (
               <ScrollView>
-                {currentActorsA.map((actor) => (
+                {currentActorsA.map((actor, index) => (
                   <TouchableOpacity
-                    key={actor.id.toString()}
+                    key={`A-${actor.id}-${index}`} // Unique key by combining side, id, and index
                     style={styles.actorContainer}
                     onPress={() => handleActorPress(actor.id, actor.name, 'A')}
                   >
@@ -222,9 +220,9 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
               <ActivityIndicator size="large" color="#0000ff" />
             ) : selectedActorB ? (
               <ScrollView>
-                {actorMoviesB.map((item) => (
+                {actorMoviesB.map((item, index) => (
                   <TouchableOpacity
-                    key={item.id}
+                    key={`B-${item.id}-${index}`} // Unique key by combining side, id, and index
                     style={styles.actorContainer}
                     onPress={() => handleMoviePress(item.id, item.title, item.posterPath, 'B')}
                   >
@@ -234,9 +232,9 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
               </ScrollView>
             ) : (
               <ScrollView>
-                {currentActorsB.map((actor) => (
+                {currentActorsB.map((actor, index) => (
                   <TouchableOpacity
-                    key={actor.id.toString()}
+                    key={`B-${actor.id}-${index}`} // Unique key by combining side, id, and index
                     style={styles.actorContainer}
                     onPress={() => handleActorPress(actor.id, actor.name, 'B')}
                   >
