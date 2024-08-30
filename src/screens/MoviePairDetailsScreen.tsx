@@ -39,16 +39,14 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
   const [path, setPath] = useState<PathNode[]>([{ id: movieA.id, title: movieA.title, type: 'movie', side: 'A' }]);
 
   useEffect(() => {
-    const hasCommonActor = currentActorsA.some(actorA =>
-      currentActorsB.some(actorB => actorA.id === actorB.id)
-    );
+    const hasCommonSelectedActor =
+      selectedActorA && selectedActorB && selectedActorA.id === selectedActorB.id;
 
-    const hasCommonMovie = actorMoviesA.some(movieA =>
-      actorMoviesB.some(movieB => movieA.id === movieB.id)
-    );
+    const hasCommonSelectedMovie =
+      currentMovieA.id === currentMovieB.id;
 
-    setShowConfirmButton(hasCommonActor || hasCommonMovie);
-  }, [currentActorsA, currentActorsB, actorMoviesA, actorMoviesB]);
+    setShowConfirmButton(hasCommonSelectedActor || hasCommonSelectedMovie);
+  }, [selectedActorA, selectedActorB, currentMovieA, currentMovieB]);
 
   const handleActorPress = async (actorId: number, actorName: string, fromMovie: 'A' | 'B') => {
     if (fromMovie === 'A') {
@@ -136,7 +134,7 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
     navigation.navigate('ConnectionPathScreen', {
       path,
       startNode: path[0],
-      targetNode: { ...movieB, type: 'movie', side: 'B' },  // Ensure movieB is the target node
+      targetNode: { ...movieB, type: 'movie', side: 'B' },
       moves: path.length,
     });
   };
@@ -245,19 +243,19 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
             )}
           </View>
         </View>
-      </ScrollView>
 
-      {/* Confirm Connection Button */}
-      {showConfirmButton && (
-        <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmConnection}>
-          <Text style={styles.confirmButtonText}>Confirm Connection!</Text>
+        {/* Confirm Connection Button */}
+        {showConfirmButton && (
+          <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmConnection}>
+            <Text style={styles.confirmButtonText}>Confirm Connection!</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Start Over Button */}
+        <TouchableOpacity style={styles.startOverButton} onPress={handleStartOver}>
+          <Text style={styles.startOverButtonText}>Start Over</Text>
         </TouchableOpacity>
-      )}
-
-      {/* Start Over Button */}
-      <TouchableOpacity style={styles.startOverButton} onPress={handleStartOver}>
-        <Text style={styles.startOverButtonText}>Start Over</Text>
-      </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 };
@@ -270,6 +268,7 @@ const styles = StyleSheet.create({
   scrollViewContent: {
     flexGrow: 1,
     justifyContent: 'center',
+    paddingBottom: 80, // Ensures space for buttons
   },
   moviesRow: {
     flexDirection: 'row',
@@ -310,7 +309,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 25,
-    marginBottom: 10,  // Adjust margin to sit above the start over button
+    position: 'absolute',
+    bottom: 70, // Position above the Start Over button
     alignSelf: 'center',
   },
   confirmButtonText: {
@@ -324,6 +324,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 25,
+    position: 'absolute',
+    bottom: 20,
     alignSelf: 'center',
   },
   startOverButtonText: {
