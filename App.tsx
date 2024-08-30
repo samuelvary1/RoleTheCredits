@@ -8,33 +8,8 @@ import ActorMoviesScreen from './src/screens/ActorMoviesScreen';
 import MovieDetailsScreen from './src/screens/MovieDetailsScreen';
 import LockedInPairScreen from './src/screens/LockedInPairScreen';
 import GameScreen from './src/screens/GameScreen';
-
-// Define the types for the navigation stack
-export type RootStackParamList = {
-  Login: undefined;
-  SignUp: undefined;
-  RandomMovies: undefined;
-  ActorMoviesScreen: {
-    actorId: number;
-    actorName: string;
-    actorImageUrl: string;
-    movieB: { id: number; title: string; posterPath: string };
-  };
-  MovieDetailsScreen: {
-    movieId: number;
-    movieTitle: string;
-    moviePoster: string;
-    movieB: { id: number; title: string; posterPath: string };
-  };
-  LockedInPairScreen: {
-    movieA: { title: string; posterPath: string };
-    movieB: { title: string; posterPath: string };
-  };
-  GameScreen: {
-    movieA: { id: number; title: string; posterPath: string };
-    movieB: { id: number; title: string; posterPath: string };
-  };
-};
+import { RootStackParamList } from './src/navigation/AppNavigator';
+import MoviePairDetailsScreen from './src/screens/MoviePairDetailsScreen';
 
 // Create the stack navigator
 const Stack = createStackNavigator<RootStackParamList>();
@@ -55,6 +30,7 @@ const App: React.FC = () => {
         <Stack.Screen name="MovieDetailsScreen" component={MovieDetailsScreen} />
         <Stack.Screen name="LockedInPairScreen" component={LockedInPairScreen} />
         <Stack.Screen name="GameScreen" component={GameScreen} />
+        <Stack.Screen name="MoviePairDetailsScreen" component={MoviePairDetailsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -7,6 +7,8 @@ import ActorMoviesScreen from '../screens/ActorMoviesScreen';
 import MovieDetailsScreen from '../screens/MovieDetailsScreen';
 import LockedInPairScreen from '../screens/LockedInPairScreen';
 import GameScreen from '../screens/GameScreen';
+import MoviePairDetailsScreen from '../screens/MoviePairDetailsScreen';
+import { Movie } from '../types';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -25,12 +27,16 @@ export type RootStackParamList = {
     movieB: { id: number; title: string; posterPath: string };
   };
   LockedInPairScreen: {
-    movieA: { title: string; posterPath: string };
-    movieB: { title: string; posterPath: string };
+    movieA: Movie;
+    movieB: Movie;
   };
   GameScreen: {
-    movieA: { id: number; title: string; posterPath: string };
-    movieB: { id: number; title: string; posterPath: string };
+    movieA: Movie;
+    movieB: Movie;
+  };
+  MoviePairDetailsScreen: {
+    movieA: Movie;
+    movieB: Movie;
   };
 };
 
@@ -45,7 +51,8 @@ const AppNavigator = () => {
       <Stack.Screen name="ActorMoviesScreen" component={ActorMoviesScreen} />
       <Stack.Screen name="MovieDetailsScreen" component={MovieDetailsScreen} />
       <Stack.Screen name="LockedInPairScreen" component={LockedInPairScreen} />
-      <Stack.Screen name="GameScreen" component={GameScreen} /> {/* Register the GameScreen */}
+      <Stack.Screen name="GameScreen" component={GameScreen} />
+      <Stack.Screen name="MoviePairDetailsScreen" component={MoviePairDetailsScreen} />
     </Stack.Navigator>
   );
 };
