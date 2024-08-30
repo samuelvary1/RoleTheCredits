@@ -14,7 +14,7 @@ type Props = {
 
 const RandomMovies: React.FC<Props> = ({ navigation }) => {
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const fetchRandomMovie = async (): Promise<Movie | undefined> => {
     try {
@@ -40,6 +40,7 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
         title: movie.title,
         posterPath: movie.poster_path,
         actors: topActors,
+        type: 'movie'
       };
     } catch (error) {
       console.error('Error fetching movie data:', error);
@@ -58,7 +59,7 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
 
   const handleViewPairDetails = () => {
     if (movies.length === 2) {
-      navigation.navigate('MoviePairDetailsScreen', {
+      navigation.navigate('GameScreen', {
         movieA: movies[0],
         movieB: movies[1],
       });
@@ -69,28 +70,30 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
     loadMovies();
   }, []);
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
-
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.moviesRow}>
-        {movies.map((movie, index) => (
-          <View key={index} style={styles.movieContainer}>
-            <Text style={styles.movieLabel}>{index === 0 ? 'Movie A' : 'Movie B'}</Text>
-            <Image
-              source={{ uri: `https://image.tmdb.org/t/p/w500${movie.posterPath}` }}
-              style={styles.poster}
-            />
-            <Text style={styles.title}>{movie.title}</Text>
-            <Text style={styles.subtitle}>Top 10 Actors:</Text>
-            {movie.actors.map(actor => (
-              <Text key={actor.id} style={styles.actor}>{actor.name}</Text>
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        {loading ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : (
+          <View style={styles.moviesRow}>
+            {movies.map((movie, index) => (
+              <View key={index} style={styles.movieContainer}>
+                <Text style={styles.movieLabel}>{index === 0 ? 'Movie A' : 'Movie B'}</Text>
+                <Image
+                  source={{ uri: `https://image.tmdb.org/t/p/w500${movie.posterPath}` }}
+                  style={styles.poster}
+                />
+                <Text style={styles.title}>{movie.title}</Text>
+                <Text style={styles.subtitle}>Top 10 Actors:</Text>
+                {movie.actors.map(actor => (
+                  <Text key={actor.id} style={styles.actor}>{actor.name}</Text>
+                ))}
+              </View>
             ))}
           </View>
-        ))}
-      </View>
+        )}
+      </ScrollView>
 
       <View style={styles.buttonsContainer}>
         <TouchableOpacity style={styles.shuffleButton} onPress={loadMovies}>
@@ -100,14 +103,19 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.buttonText}>Start Game with this Pair</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 10,
     paddingBottom: 20,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
   },
   moviesRow: {
     flexDirection: 'row',
@@ -146,9 +154,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   buttonsContainer: {
+    position: 'absolute',
+    bottom: 30, // Add padding from the bottom
+    left: 0,
+    right: 0,
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 10,
+    paddingHorizontal: 20,
   },
   shuffleButton: {
     backgroundColor: '#007BFF',

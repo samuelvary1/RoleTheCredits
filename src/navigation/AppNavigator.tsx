@@ -7,7 +7,6 @@ import ActorMoviesScreen from '../screens/ActorMoviesScreen';
 import MovieDetailsScreen from '../screens/MovieDetailsScreen';
 import LockedInPairScreen from '../screens/LockedInPairScreen';
 import GameScreen from '../screens/GameScreen';
-import MoviePairDetailsScreen from '../screens/MoviePairDetailsScreen';
 import ConnectionPathScreen from '../screens/ConnectionPathScreen';
 import { Actor, Movie, PathNode } from '../types';
 
@@ -42,14 +41,6 @@ export type RootStackParamList = {
     currentMovieA?: Movie | null;
     currentMovieB?: Movie | null;
   };
-  MoviePairDetailsScreen: {
-    movieA: Movie;
-    movieB: Movie;
-    selectedActorA?: Actor | null;
-    selectedActorB?: Actor | null;
-    currentMovieA?: Movie | null;
-    currentMovieB?: Movie | null;
-  };
   ConnectionPathScreen: {
     path: PathNode[];
     startNode: PathNode;
@@ -70,7 +61,6 @@ const AppNavigator = () => {
       <Stack.Screen name="MovieDetailsScreen" component={MovieDetailsScreen} />
       <Stack.Screen name="LockedInPairScreen" component={LockedInPairScreen} />
       <Stack.Screen name="GameScreen" component={GameScreen} />
-      <Stack.Screen name="MoviePairDetailsScreen" component={MoviePairDetailsScreen} />
       <Stack.Screen name="ConnectionPathScreen" component={ConnectionPathScreen} />
     </Stack.Navigator>
   );

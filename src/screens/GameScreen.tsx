@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, ActivityIndicator } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
-import { Actor, Movie } from '../types';
+import axios from 'axios';
+import { TMDB_API_KEY } from '@env';
+import { Actor, Movie, PathNode } from '../types';
 
 type GameScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GameScreen'>;
 type GameScreenRouteProp = RouteProp<RootStackParamList, 'GameScreen'>;
@@ -13,75 +15,125 @@ type Props = {
   route: GameScreenRouteProp;
 };
 
-type PathNode = {
-  id: number;
-  title: string;
-  type: 'movie' | 'actor';
-  connectedTo?: number[]; // IDs of connected nodes
-};
-
-type UserProgress = {
-  path: PathNode[];
-  startNode: PathNode;
-  targetNode: PathNode;
-  currentNode: PathNode;
-  moves: number;
-  isConnected: boolean;
-  selectedActorA?: Actor | null;
-  selectedActorB?: Actor | null;
-  currentMovieA?: Movie | null;
-  currentMovieB?: Movie | null;
-};
-
 const GameScreen: React.FC<Props> = ({ navigation, route }) => {
   const {
-    movieA = { id: 0, title: 'Unknown', posterPath: '', actors: [] },
-    movieB = { id: 0, title: 'Unknown', posterPath: '', actors: [] },
-    selectedActorA,
-    selectedActorB,
-    currentMovieA,
-    currentMovieB,
+    movieA = { id: 0, title: 'Unknown Movie A', posterPath: '', actors: [], type: 'movie' },
+    movieB = { id: 0, title: 'Unknown Movie B', posterPath: '', actors: [], type: 'movie' },
+    selectedActorA: prevSelectedActorA = null,
+    selectedActorB: prevSelectedActorB = null,
+    currentMovieA: prevCurrentMovieA = null,
+    currentMovieB: prevCurrentMovieB = null,
   } = route.params;
 
-  const initialProgress: UserProgress = {
-    path: [],
-    startNode: { id: movieA.id, title: movieA.title, type: 'movie' },
-    targetNode: { id: movieB.id, title: movieB.title, type: 'movie' },
-    currentNode: { id: movieA.id, title: movieA.title, type: 'movie' },
-    moves: 0,
-    isConnected: false,
-    selectedActorA: selectedActorA || null,
-    selectedActorB: selectedActorB || null,
-    currentMovieA: currentMovieA || movieA,
-    currentMovieB: currentMovieB || movieB,
-  };
-
-  const [progress, setProgress] = useState<UserProgress>(initialProgress);
-
-  const navigateToNode = (newNode: PathNode) => {
-    setProgress((prevProgress) => {
-      const newPath = [...prevProgress.path, newNode];
-      const isConnected = newNode.id === prevProgress.targetNode.id;
-
-      return {
-        ...prevProgress,
-        path: newPath,
-        currentNode: newNode,
-        moves: prevProgress.moves + 1,
-        isConnected,
-      };
-    });
-  };
+  const [selectedActorA, setSelectedActorA] = useState<Actor | null>(prevSelectedActorA);
+  const [selectedActorB, setSelectedActorB] = useState<Actor | null>(prevSelectedActorB);
+  const [actorMoviesA, setActorMoviesA] = useState<Movie[]>([]);
+  const [actorMoviesB, setActorMoviesB] = useState<Movie[]>([]);
+  const [currentMovieA, setCurrentMovieA] = useState<Movie>(prevCurrentMovieA || movieA);
+  const [currentMovieB, setCurrentMovieB] = useState<Movie>(prevCurrentMovieB || movieB);
+  const [currentActorsA, setCurrentActorsA] = useState<Actor[]>(prevCurrentMovieA?.actors || movieA.actors);
+  const [currentActorsB, setCurrentActorsB] = useState<Actor[]>(prevCurrentMovieB?.actors || movieB.actors);
+  const [loadingA, setLoadingA] = useState<boolean>(false);
+  const [loadingB, setLoadingB] = useState<boolean>(false);
+  const [showConfirmButton, setShowConfirmButton] = useState<boolean>(false);
+  const [path, setPath] = useState<PathNode[]>([{ id: movieA.id, title: movieA.title, type: 'movie', side: 'A' }]);
 
   useEffect(() => {
-    if (progress.isConnected) {
-      handleWin();
-    }
-  }, [progress.isConnected]);
+    const hasCommonActor = selectedActorA && selectedActorB && selectedActorA.id === selectedActorB.id;
+    const hasCommonMovie = currentMovieA.id === currentMovieB.id;
 
-  const handleWin = () => {
-    Alert.alert(`You connected the movies in ${progress.moves} moves!`);
-    // Additional win logic can be added here
+    setShowConfirmButton(hasCommonActor || hasCommonMovie);
+  }, [selectedActorA, selectedActorB, currentMovieA, currentMovieB]);
+
+  const handleActorPress = async (actorId: number, actorName: string, fromMovie: 'A' | 'B') => {
+    if (fromMovie === 'A') {
+      setLoadingA(true);
+    } else {
+      setLoadingB(true);
+    }
+
+    try {
+      const actorResponse = await axios.get(
+        `https://api.themoviedb.org/3/person/${actorId}?api_key=${TMDB_API_KEY}&language=en-US`
+      );
+      const profilePath = actorResponse.data.profile_path;
+
+      if (fromMovie === 'A') {
+        setSelectedActorA({ id: actorId, name: actorName, profilePath });
+        setPath([...path, { id: actorId, title: actorName, type: 'actor', side: 'A' }]);
+        setLoadingA(false);
+      } else {
+        setSelectedActorB({ id: actorId, name: actorName, profilePath });
+        setPath([...path, { id: actorId, title: actorName, type: 'actor', side: 'B' }]);
+        setLoadingB(false);
+      }
+
+      const moviesResponse = await axios.get(
+        `https://api.themoviedb.org/3/person/${actorId}/movie_credits?api_key=${TMDB_API_KEY}&language=en-US`
+      );
+      const movies = moviesResponse.data.cast.map((movie: any, index: number) => ({
+        id: movie.id,
+        title: movie.title,
+        posterPath: movie.poster_path,
+        releaseDate: movie.release_date,
+      }));
+
+      if (fromMovie === 'A') {
+        setActorMoviesA(movies);
+      } else {
+        setActorMoviesB(movies);
+      }
+    } catch (error) {
+      console.error('Error fetching actor details or movies:', error);
+      setLoadingA(false);
+      setLoadingB(false);
+    }
+  };
+
+  const handleMoviePress = async (movieId: number, movieTitle: string, posterPath: string, fromMovie: 'A' | 'B') => {
+    if (fromMovie === 'A') {
+      setLoadingA(true);
+    } else {
+      setLoadingB(true);
+    }
+
+    try {
+      const response = await axios.get(
+        `https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${TMDB_API_KEY}&language=en-US`
+      );
+      const actors = response.data.cast.slice(0, 10).map((actor: any, index: number) => ({
+        id: actor.id,
+        name: actor.name,
+        profilePath: actor.profile_path,
+      }));
+
+      if (fromMovie === 'A') {
+        setCurrentMovieA({ id: movieId, title: movieTitle, actors, posterPath, type: 'movie' });
+        setCurrentActorsA(actors);
+        setSelectedActorA(null);
+        setPath([...path, { id: movieId, title: movieTitle, type: 'movie', side: 'A' }]);
+        setLoadingA(false);
+      } else {
+        setCurrentMovieB({ id: movieId, title: movieTitle, actors, posterPath, type: 'movie' });
+        setCurrentActorsB(actors);
+        setSelectedActorB(null);
+        setPath([...path, { id: movieId, title: movieTitle, type: 'movie', side: 'B' }]);
+        setLoadingB(false);
+      }
+    } catch (error) {
+      console.error('Error fetching movie credits:', error);
+      setLoadingA(false);
+      setLoadingB(false);
+    }
+  };
+
+  const handleConfirmConnection = () => {
+    navigation.navigate('ConnectionPathScreen', {
+      path,
+      startNode: path[0],
+      targetNode: { ...movieB, type: 'movie', side: 'B' },  // Ensure movieB is the target node
+      moves: path.length,
+    });
   };
 
   const handleStartOver = () => {
@@ -90,32 +142,114 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Connect {progress.startNode.title} to {progress.targetNode.title}</Text>
-      <Text style={styles.currentNode}>Current Node: {progress.currentNode.title}</Text>
-      <Text style={styles.moves}>Total Moves: {progress.moves}</Text>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.moviesRow}>
+          {/* Movie A side */}
+          <View style={styles.movieContainer}>
+            <Text style={styles.movieLabel}>
+              {selectedActorA ? selectedActorA.name : currentMovieA.title}
+            </Text>
+            <Image
+              source={{
+                uri: selectedActorA?.profilePath
+                  ? `https://image.tmdb.org/t/p/w500${selectedActorA.profilePath}`
+                  : `https://image.tmdb.org/t/p/w500${currentMovieA.posterPath}`,
+              }}
+              style={styles.poster}
+            />
+            <Text style={styles.title}>
+              {selectedActorA ? 'Movies' : 'Top 10 Actors'}
+            </Text>
+            <Text style={styles.subtitle}>
+              {selectedActorA ? 'Movies this actor has been in:' : 'Top 10 Actors in this Movie:'}
+            </Text>
+            {loadingA ? (
+              <ActivityIndicator size="large" color="#0000ff" />
+            ) : selectedActorA ? (
+              <ScrollView>
+                {actorMoviesA.map((item, index) => (
+                  <TouchableOpacity
+                    key={`A-${item.id}-${index}`} // Unique key by combining side, id, and index
+                    style={styles.actorContainer}
+                    onPress={() => handleMoviePress(item.id, item.title, item.posterPath, 'A')}
+                  >
+                    <Text style={styles.actorName}>{item.title}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            ) : (
+              <ScrollView>
+                {currentActorsA.map((actor, index) => (
+                  <TouchableOpacity
+                    key={`A-${actor.id}-${index}`} // Unique key by combining side, id, and index
+                    style={styles.actorContainer}
+                    onPress={() => handleActorPress(actor.id, actor.name, 'A')}
+                  >
+                    <Text style={styles.actorName}>{actor.name}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            )}
+          </View>
 
-      <TouchableOpacity
-        style={styles.detailsButton}
-        onPress={() =>
-          navigation.navigate('MoviePairDetailsScreen', {
-            movieA: progress.currentMovieA!,
-            movieB: progress.currentMovieB!,
-            selectedActorA: progress.selectedActorA,
-            selectedActorB: progress.selectedActorB,
-            currentMovieA: progress.currentMovieA,
-            currentMovieB: progress.currentMovieB,
-          })
-        }
-      >
-        <Text style={styles.detailsButtonText}>View Movie Pair Details</Text>
-      </TouchableOpacity>
+          {/* Movie B side */}
+          <View style={styles.movieContainer}>
+            <Text
 
-      <TouchableOpacity
-        style={styles.navigateButton}
-        onPress={() => navigateToNode({ id: 3, title: 'Next Movie', type: 'movie' })} // Example next node
-      >
-        <Text style={styles.navigateButtonText}>Go to Next Node</Text>
-      </TouchableOpacity>
+ style={styles.movieLabel}>
+              {selectedActorB ? selectedActorB.name : currentMovieB.title}
+            </Text>
+            <Image
+              source={{
+                uri: selectedActorB?.profilePath
+                  ? `https://image.tmdb.org/t/p/w500${selectedActorB.profilePath}`
+                  : `https://image.tmdb.org/t/p/w500${currentMovieB.posterPath}`,
+              }}
+              style={styles.poster}
+            />
+            <Text style={styles.title}>
+              {selectedActorB ? 'Movies' : 'Top 10 Actors'}
+            </Text>
+            <Text style={styles.subtitle}>
+              {selectedActorB ? 'Movies this actor has been in:' : 'Top 10 Actors in this Movie:'}
+            </Text>
+            {loadingB ? (
+              <ActivityIndicator size="large" color="#0000ff" />
+            ) : selectedActorB ? (
+              <ScrollView>
+                {actorMoviesB.map((item, index) => (
+                  <TouchableOpacity
+                    key={`B-${item.id}-${index}`} // Unique key by combining side, id, and index
+                    style={styles.actorContainer}
+                    onPress={() => handleMoviePress(item.id, item.title, item.posterPath, 'B')}
+                  >
+                    <Text style={styles.actorName}>{item.title}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            ) : (
+              <ScrollView>
+                {currentActorsB.map((actor, index) => (
+                  <TouchableOpacity
+                    key={`B-${actor.id}-${index}`} // Unique key by combining side, id, and index
+                    style={styles.actorContainer}
+                    onPress={() => handleActorPress(actor.id, actor.name, 'B')}
+                  >
+                    <Text style={styles.actorName}>{actor.name}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            )}
+          </View>
+        </View>
+      </ScrollView>
+
+      {/* Confirm Connection Button */}
+      {showConfirmButton && (
+        <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmConnection}>
+          <Text style={styles.confirmButtonText}>Confirm Connection!</Text>
+        </TouchableOpacity>
+      )}
 
       {/* Start Over Button */}
       <TouchableOpacity style={styles.startOverButton} onPress={handleStartOver}>
@@ -129,59 +263,69 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
     justifyContent: 'center',
-    alignItems: 'center',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+  moviesRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  currentNode: {
+  movieContainer: {
+    flex: 1,
+    margin: 10,
+  },
+  movieLabel: {
     fontSize: 18,
+    fontWeight: 'bold',
     marginBottom: 10,
   },
-  moves: {
+  poster: {
+    width: '100%',
+    height: 250,
+    resizeMode: 'cover',
+    marginBottom: 10,
+  },
+  title: {
     fontSize: 16,
-    marginBottom: 20,
-  },
-  detailsButton: {
-    backgroundColor: '#007BFF',
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 25,
-    marginTop: 20,
-    marginBottom: 20,
-  },
-  detailsButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
     fontWeight: 'bold',
-    textAlign: 'center',
+    marginBottom: 5,
   },
-  navigateButton: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 12,
-    paddingHorizontal: 25,
+  subtitle: {
+    fontSize: 14,
+    marginBottom: 10,
+  },
+  actorContainer: {
+    marginBottom: 10,
+  },
+  actorName: {
+    fontSize: 14,
+  },
+  confirmButton: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 25,
-    marginTop: 20,
+    marginBottom: 10,  // Adjust margin to sit above the start over button
+    alignSelf: 'center',
   },
-  navigateButtonText: {
+  confirmButtonText: {
     color: '#FFFFFF',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   startOverButton: {
-    backgroundColor: '#FF5733',
-    paddingVertical: 12,
-    paddingHorizontal: 25,
+    backgroundColor: '#4CAF50',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 25,
-    marginTop: 20,
+    alignSelf: 'center',
   },
   startOverButtonText: {
     color: '#FFFFFF',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
   },
