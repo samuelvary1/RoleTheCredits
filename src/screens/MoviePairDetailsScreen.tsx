@@ -29,35 +29,48 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
   const [loadingA, setLoadingA] = useState<boolean>(false);
   const [loadingB, setLoadingB] = useState<boolean>(false);
 
-  const handleActorPress = async (actorId: number, actorName: string, profilePath: string, fromMovie: 'A' | 'B') => {
+  const handleActorPress = async (actorId: number, actorName: string, fromMovie: 'A' | 'B') => {
     if (fromMovie === 'A') {
-      setSelectedActorA({ id: actorId, name: actorName, profilePath });
-      setLoadingA(true);
+        setLoadingA(true);
     } else {
-      setSelectedActorB({ id: actorId, name: actorName, profilePath });
-      setLoadingB(true);
+        setLoadingB(true);
     }
 
     try {
-      const response = await axios.get(
-        `https://api.themoviedb.org/3/person/${actorId}/movie_credits?api_key=${TMDB_API_KEY}&language=en-US`
-      );
-      const movies = response.data.cast.map((movie: any) => ({
-        id: movie.id,
-        title: movie.title,
-        posterPath: movie.poster_path,
-        releaseDate: movie.release_date,
-      }));
+        // Fetch actor details to get the profile path
+        const actorResponse = await axios.get(
+            `https://api.themoviedb.org/3/person/${actorId}?api_key=${TMDB_API_KEY}&language=en-US`
+        );
+        const profilePath = actorResponse.data.profile_path;
 
-      if (fromMovie === 'A') {
-        setActorMoviesA(movies);
-        setLoadingA(false);
-      } else {
-        setActorMoviesB(movies);
-        setLoadingB(false);
-      }
+        if (fromMovie === 'A') {
+            setSelectedActorA({ id: actorId, name: actorName, profilePath });
+            setLoadingA(false);
+        } else {
+            setSelectedActorB({ id: actorId, name: actorName, profilePath });
+            setLoadingB(false);
+        }
+
+        // Fetch the actor's movies
+        const moviesResponse = await axios.get(
+            `https://api.themoviedb.org/3/person/${actorId}/movie_credits?api_key=${TMDB_API_KEY}&language=en-US`
+        );
+        const movies = moviesResponse.data.cast.map((movie: any) => ({
+            id: movie.id,
+            title: movie.title,
+            posterPath: movie.poster_path,
+            releaseDate: movie.release_date,
+        }));
+
+        if (fromMovie === 'A') {
+            setActorMoviesA(movies);
+        } else {
+            setActorMoviesB(movies);
+        }
     } catch (error) {
-      console.error('Error fetching actor movies:', error);
+        console.error('Error fetching actor details or movies:', error);
+        setLoadingA(false);
+        setLoadingB(false);
     }
   };
 
@@ -91,6 +104,8 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
       }
     } catch (error) {
       console.error('Error fetching movie credits:', error);
+      setLoadingA(false);
+      setLoadingB(false);
     }
   };
 
@@ -104,7 +119,7 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
               {selectedActorA ? selectedActorA.name : currentMovieA!.title}
             </Text>
             <Image
-              source={{ uri: selectedActorA
+              source={{ uri: selectedActorA?.profilePath
                 ? `https://image.tmdb.org/t/p/w500${selectedActorA.profilePath}`
                 : `https://image.tmdb.org/t/p/w500${currentMovieA!.posterPath}` }}
               style={styles.poster}
@@ -132,7 +147,7 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
                 <TouchableOpacity
                   key={actor.id}
                   style={styles.actorContainer}
-                  onPress={() => handleActorPress(actor.id, actor.name, actor.profilePath, 'A')}
+                  onPress={() => handleActorPress(actor.id, actor.name, 'A')}
                 >
                   <Text style={styles.actorName}>{actor.name}</Text>
                 </TouchableOpacity>
@@ -146,7 +161,7 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
               {selectedActorB ? selectedActorB.name : currentMovieB!.title}
             </Text>
             <Image
-              source={{ uri: selectedActorB
+              source={{ uri: selectedActorB?.profilePath
                 ? `https://image.tmdb.org/t/p/w500${selectedActorB.profilePath}`
                 : `https://image.tmdb.org/t/p/w500${currentMovieB!.posterPath}` }}
               style={styles.poster}
@@ -174,7 +189,7 @@ const MoviePairDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
                 <TouchableOpacity
                   key={actor.id}
                   style={styles.actorContainer}
-                  onPress={() => handleActorPress(actor.id, actor.name, actor.profilePath, 'B')}
+                  onPress={() => handleActorPress(actor.id, actor.name, 'B')}
                 >
                   <Text style={styles.actorName}>{actor.name}</Text>
                 </TouchableOpacity>
