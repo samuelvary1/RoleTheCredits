@@ -10,6 +10,7 @@ import LockedInPairScreen from './src/screens/LockedInPairScreen';
 import GameScreen from './src/screens/GameScreen';
 import { RootStackParamList } from './src/navigation/AppNavigator';
 import MoviePairDetailsScreen from './src/screens/MoviePairDetailsScreen';
+import ConnectionPathScreen from './src/screens/ConnectionPathScreen';
 
 // Create the stack navigator
 const Stack = createStackNavigator<RootStackParamList>();
@@ -31,6 +32,7 @@ const App: React.FC = () => {
         <Stack.Screen name="LockedInPairScreen" component={LockedInPairScreen} />
         <Stack.Screen name="GameScreen" component={GameScreen} />
         <Stack.Screen name="MoviePairDetailsScreen" component={MoviePairDetailsScreen} />
+        <Stack.Screen name="ConnectionPathScreen" component={ConnectionPathScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
