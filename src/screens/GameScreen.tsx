@@ -134,15 +134,26 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
     const user = auth().currentUser;
     if (user) {
       try {
-        const userDoc = firestore().collection('users').doc(user.uid);
-        await userDoc.update({
-          completedConnections: firestore.FieldValue.arrayUnion({
-            movieA: currentMovieA.title,
-            movieB: currentMovieB.title,
-            moves: path.length - 1, // subtract 1 to not count the starting node
-            timestamp: firestore.FieldValue.serverTimestamp(),
-          }),
+        const userDocRef = firestore().collection('users').doc(user.uid);
+  
+        // First, create the completed connection object without the timestamp
+        const completedConnection = {
+          movieA: currentMovieA.title,
+          movieB: currentMovieB.title,
+          moves: path.length - 1, // subtract 1 to not count the starting node
+        };
+  
+        // Update the document to add the new connection
+        await userDocRef.update({
+          completedConnections: firestore.FieldValue.arrayUnion(completedConnection),
         });
+  
+        // Add the timestamp in a separate update call
+        const timestamp = firestore.FieldValue.serverTimestamp();
+        await userDocRef.update({
+          [`completedConnections.${path.length - 1}.timestamp`]: timestamp,
+        });
+  
         Alert.alert(`Congratulations! You've connected the movies in ${path.length - 1} moves!`);
         navigation.navigate('RandomMovies'); // Navigate back to the movie selection screen
       } catch (error) {
