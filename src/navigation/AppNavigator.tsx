@@ -51,7 +51,7 @@ export type RootStackParamList = {
     targetNode: PathNode;
     moves: number;
   };
-  AccountOverview: undefined; // Add AccountOverviewScreen to the stack
+  AccountOverviewScreen: undefined; // Add AccountOverviewScreen to the stack
   WatchlistScreen: undefined; // Add WatchlistScreen to the stack
   CompletedConnectionsScreen: undefined; // Add CompletedConnectionsScreen to the stack
   ChangePasswordScreen: undefined; // Add ChangePasswordScreen to the stack
@@ -70,10 +70,10 @@ const AppNavigator = () => {
       <Stack.Screen name="LockedInPairScreen" component={LockedInPairScreen} />
       <Stack.Screen name="GameScreen" component={GameScreen} />
       <Stack.Screen name="ConnectionPathScreen" component={ConnectionPathScreen} />
-      <Stack.Screen name="AccountOverview" component={AccountOverviewScreen} /> {/* Add Account Overview Screen */}
-      <Stack.Screen name="WatchlistScreen" component={WatchlistScreen} /> {/* Add Watchlist Screen */}
-      <Stack.Screen name="CompletedConnectionsScreen" component={CompletedConnectionsScreen} /> {/* Add Completed Connections Screen */}
-      <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} /> {/* Add Change Password Screen */}
+      <Stack.Screen name="AccountOverviewScreen" component={AccountOverviewScreen} />
+      <Stack.Screen name="WatchlistScreen" component={WatchlistScreen} />
+      <Stack.Screen name="CompletedConnectionsScreen" component={CompletedConnectionsScreen} />
+      <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />
     </Stack.Navigator>
   );
 };

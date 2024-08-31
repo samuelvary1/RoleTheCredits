@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import auth from '@react-native-firebase/auth'; 
-import firestore from '@react-native-firebase/firestore'; 
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -57,8 +57,19 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       });
   };
 
-  const handleGuestPlay = () => {
-    navigation.navigate('RandomMovies'); // Allow guest access without login
+  const handleGuestPlay = async () => {
+    try {
+      const user = auth().currentUser;
+      if (user) {
+        await auth().signOut();
+        console.log('User signed out');
+      } else {
+        console.log('No user is currently signed in');
+      }
+      navigation.navigate('RandomMovies'); // Allow guest access without login
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   return (

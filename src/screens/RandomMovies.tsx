@@ -5,8 +5,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { Movie } from '../types';
 import { TMDB_API_KEY } from '@env';
+import auth from '@react-native-firebase/auth';
 
-console.log(TMDB_API_KEY);
 type RandomMoviesNavigationProp = StackNavigationProp<RootStackParamList, 'RandomMovies'>;
 
 type Props = {
@@ -67,9 +67,15 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
     }
   };
 
+  const handleAccountNavigation = () => {
+    navigation.navigate('AccountOverviewScreen');
+  };
+
   useEffect(() => {
     loadMovies();
   }, []);
+
+  const user = auth().currentUser;
 
   return (
     <View style={styles.container}>
@@ -103,7 +109,19 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
         <TouchableOpacity style={styles.startGameButton} onPress={handleViewPairDetails}>
           <Text style={styles.buttonText}>Start Game with this Pair</Text>
         </TouchableOpacity>
+        {user && (
+          <TouchableOpacity style={styles.accountButton} onPress={handleAccountNavigation}>
+            <Text style={styles.buttonText}>Account</Text>
+          </TouchableOpacity>
+        )}
       </View>
+
+      {/* Conditionally render the login button if the user is playing as a guest */}
+      {!user && (
+        <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('Login')}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -171,6 +189,21 @@ const styles = StyleSheet.create({
   },
   startGameButton: {
     backgroundColor: '#4CAF50',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+  },
+  accountButton: {
+    backgroundColor: '#FFA500', // Add a different color to distinguish the account button
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+  },
+  loginButton: {
+    position: 'absolute',
+    top: 50, // Lowered from the top
+    alignSelf: 'center', // Center the button horizontally
+    backgroundColor: '#007BFF',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 20,

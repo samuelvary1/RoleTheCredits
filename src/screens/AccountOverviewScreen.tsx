@@ -5,8 +5,8 @@ import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import auth from '@react-native-firebase/auth';
 
-type AccountOverviewScreenNavigationProp = StackNavigationProp<RootStackParamList, 'AccountOverview'>;
-type AccountOverviewScreenRouteProp = RouteProp<RootStackParamList, 'AccountOverview'>;
+type AccountOverviewScreenNavigationProp = StackNavigationProp<RootStackParamList, 'AccountOverviewScreen'>;
+type AccountOverviewScreenRouteProp = RouteProp<RootStackParamList, 'AccountOverviewScreen'>;
 
 type Props = {
   navigation: AccountOverviewScreenNavigationProp;

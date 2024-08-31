@@ -7,9 +7,13 @@ import RandomMovies from './src/screens/RandomMovies';
 import ActorMoviesScreen from './src/screens/ActorMoviesScreen';
 import MovieDetailsScreen from './src/screens/MovieDetailsScreen';
 import LockedInPairScreen from './src/screens/LockedInPairScreen';
-import { RootStackParamList } from './src/navigation/AppNavigator';
 import GameScreen from './src/screens/GameScreen';
 import ConnectionPathScreen from './src/screens/ConnectionPathScreen';
+import AccountOverviewScreen from './src/screens/AccountOverviewScreen';
+import CompletedConnectionsScreen from './src/screens/CompletedConnectionsScreen';
+import { RootStackParamList } from './src/navigation/AppNavigator';
+import ChangePasswordScreen from './src/screens/ChangePasswordScreen';
+import WatchlistScreen from './src/screens/WatchlistScreen';
 
 // Create the stack navigator
 const Stack = createStackNavigator<RootStackParamList>();
@@ -31,6 +35,10 @@ const App: React.FC = () => {
         <Stack.Screen name="LockedInPairScreen" component={LockedInPairScreen} />
         <Stack.Screen name="GameScreen" component={GameScreen} />
         <Stack.Screen name="ConnectionPathScreen" component={ConnectionPathScreen} />
+        <Stack.Screen name="AccountOverviewScreen" component={AccountOverviewScreen} />
+        <Stack.Screen name="WatchlistScreen" component={WatchlistScreen} />
+        <Stack.Screen name="CompletedConnectionsScreen" component={CompletedConnectionsScreen} />
+        <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />        
       </Stack.Navigator>
     </NavigationContainer>
   );
