@@ -129,6 +129,28 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
 
+  const addToWatchlist = async (movie: Movie) => {
+    const user = auth().currentUser;
+    if (user) {
+      try {
+        const userDocRef = firestore().collection('users').doc(user.uid);
+        
+        await userDocRef.update({
+          watchlist: firestore.FieldValue.arrayUnion({
+            id: movie.id,
+            title: movie.title,
+            posterPath: movie.posterPath,
+          }),
+        });
+
+        Alert.alert('Added to Watchlist', `${movie.title} has been added to your watchlist.`);
+      } catch (error) {
+        console.error('Error adding to watchlist:', error);
+        Alert.alert('Error', 'There was an error adding this movie to your watchlist. Please try again.');
+      }
+    }
+  };
+
   // Handle the win condition when a connection is confirmed
   const handleWin = async () => {
     const user = auth().currentUser;
@@ -179,14 +201,16 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
             <Text style={styles.movieLabel}>
               {selectedActorA ? selectedActorA.name : currentMovieA.title}
             </Text>
-            <Image
-              source={{
-                uri: selectedActorA?.profilePath
-                  ? `https://image.tmdb.org/t/p/w500${selectedActorA.profilePath}`
-                  : `https://image.tmdb.org/t/p/w500${currentMovieA.posterPath}`,
-              }}
-              style={styles.poster}
-            />
+            <TouchableOpacity onPress={() => addToWatchlist(currentMovieA)}>
+              <Image
+                source={{
+                  uri: selectedActorA?.profilePath
+                    ? `https://image.tmdb.org/t/p/w500${selectedActorA.profilePath}`
+                    : `https://image.tmdb.org/t/p/w500${currentMovieA.posterPath}`,
+                }}
+                style={styles.poster}
+              />
+            </TouchableOpacity>
             <Text style={styles.title}>
               {selectedActorA ? 'Movies' : 'Top 10 Actors'}
             </Text>
@@ -227,14 +251,16 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
             <Text style={styles.movieLabel}>
               {selectedActorB ? selectedActorB.name : currentMovieB.title}
             </Text>
-            <Image
-              source={{
-                uri: selectedActorB?.profilePath
-                  ? `https://image.tmdb.org/t/p/w500${selectedActorB.profilePath}`
-                  : `https://image.tmdb.org/t/p/w500${currentMovieB.posterPath}`,
-              }}
-              style={styles.poster}
-            />
+            <TouchableOpacity onPress={() => addToWatchlist(currentMovieB)}>
+              <Image
+                source={{
+                  uri: selectedActorB?.profilePath
+                    ? `https://image.tmdb.org/t/p/w500${selectedActorB.profilePath}`
+                    : `https://image.tmdb.org/t/p/w500${currentMovieB.posterPath}`,
+                }}
+                style={styles.poster}
+              />
+            </TouchableOpacity>
             <Text style={styles.title}>
               {selectedActorB ? 'Movies' : 'Top 10 Actors'}
             </Text>

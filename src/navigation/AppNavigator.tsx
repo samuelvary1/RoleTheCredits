@@ -8,6 +8,10 @@ import MovieDetailsScreen from '../screens/MovieDetailsScreen';
 import LockedInPairScreen from '../screens/LockedInPairScreen';
 import GameScreen from '../screens/GameScreen';
 import ConnectionPathScreen from '../screens/ConnectionPathScreen';
+import AccountOverviewScreen from '../screens/AccountOverviewScreen'; // Import Account Overview Screen
+import WatchlistScreen from '../screens/WatchlistScreen'; // Import Watchlist Screen
+import CompletedConnectionsScreen from '../screens/CompletedConnectionsScreen'; // Import Completed Connections Screen
+import ChangePasswordScreen from '../screens/ChangePasswordScreen'; // Import Change Password Screen
 import { Actor, Movie, PathNode } from '../types';
 
 export type RootStackParamList = {
@@ -47,6 +51,10 @@ export type RootStackParamList = {
     targetNode: PathNode;
     moves: number;
   };
+  AccountOverview: undefined; // Add AccountOverviewScreen to the stack
+  WatchlistScreen: undefined; // Add WatchlistScreen to the stack
+  CompletedConnectionsScreen: undefined; // Add CompletedConnectionsScreen to the stack
+  ChangePasswordScreen: undefined; // Add ChangePasswordScreen to the stack
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -62,6 +70,10 @@ const AppNavigator = () => {
       <Stack.Screen name="LockedInPairScreen" component={LockedInPairScreen} />
       <Stack.Screen name="GameScreen" component={GameScreen} />
       <Stack.Screen name="ConnectionPathScreen" component={ConnectionPathScreen} />
+      <Stack.Screen name="AccountOverview" component={AccountOverviewScreen} /> {/* Add Account Overview Screen */}
+      <Stack.Screen name="WatchlistScreen" component={WatchlistScreen} /> {/* Add Watchlist Screen */}
+      <Stack.Screen name="CompletedConnectionsScreen" component={CompletedConnectionsScreen} /> {/* Add Completed Connections Screen */}
+      <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} /> {/* Add Change Password Screen */}
     </Stack.Navigator>
   );
 };
