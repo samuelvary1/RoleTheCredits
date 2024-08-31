@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import axios from 'axios';
 import { TMDB_API_KEY } from '@env';
 import { Actor, Movie, PathNode } from '../types';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 type GameScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GameScreen'>;
 type GameScreenRouteProp = RouteProp<RootStackParamList, 'GameScreen'>;
@@ -52,7 +54,6 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
       setLoadingB(true);
     }
 
-    console.log(TMDB_API_KEY);
     try {
       const actorResponse = await axios.get(
         `https://api.themoviedb.org/3/person/${actorId}?api_key=${TMDB_API_KEY}&language=en-US`
@@ -128,13 +129,30 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
 
+  // Handle the win condition when a connection is confirmed
+  const handleWin = async () => {
+    const user = auth().currentUser;
+    if (user) {
+      try {
+        const userDoc = firestore().collection('users').doc(user.uid);
+        await userDoc.update({
+          completedConnections: firestore.FieldValue.arrayUnion({
+            movieA: currentMovieA.title,
+            movieB: currentMovieB.title,
+            moves: path.length - 1, // subtract 1 to not count the starting node
+            timestamp: firestore.FieldValue.serverTimestamp(),
+          }),
+        });
+        Alert.alert(`Congratulations! You've connected the movies in ${path.length - 1} moves!`);
+        navigation.navigate('RandomMovies'); // Navigate back to the movie selection screen
+      } catch (error) {
+        console.error('Error updating completed connections:', error);
+      }
+    }
+  };
+
   const handleConfirmConnection = () => {
-    navigation.navigate('ConnectionPathScreen', {
-      path,
-      startNode: path[0],
-      targetNode: { ...movieB, type: 'movie', side: 'B' },  // Ensure movieB is the target node
-      moves: path.length,
-    });
+    handleWin();
   };
 
   const handleStartOver = () => {
@@ -195,9 +213,7 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
 
           {/* Movie B side */}
           <View style={styles.movieContainer}>
-            <Text
-
- style={styles.movieLabel}>
+            <Text style={styles.movieLabel}>
               {selectedActorB ? selectedActorB.name : currentMovieB.title}
             </Text>
             <Image
