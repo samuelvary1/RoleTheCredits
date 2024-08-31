@@ -60,21 +60,21 @@ const AccountOverviewScreen: React.FC<Props> = ({ navigation }) => {
       >
         <Text style={styles.buttonText}>View Completed Connections</Text>
       </TouchableOpacity>
-      
-      {/* Button to navigate to Login */}
-      <TouchableOpacity 
-        style={styles.button}
-        onPress={() => navigation.navigate('Login')}
-      >
-        <Text style={styles.buttonText}>Log Out</Text>
-      </TouchableOpacity>
-      
+            
       {/* Button to navigate back to RandomMovies */}
       <TouchableOpacity 
         style={styles.button}
         onPress={() => navigation.navigate('RandomMovies')}
       >
         <Text style={styles.buttonText}>Back to Movies</Text>
+      </TouchableOpacity>
+
+      {/* Button to navigate to Login */}
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={() => navigation.navigate('Login')}
+      >
+        <Text style={styles.buttonText}>Log Out</Text>
       </TouchableOpacity>
     </View>
   );
