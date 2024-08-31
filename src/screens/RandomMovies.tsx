@@ -109,19 +109,17 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
         <TouchableOpacity style={styles.startGameButton} onPress={handleViewPairDetails}>
           <Text style={styles.buttonText}>Start Game with this Pair</Text>
         </TouchableOpacity>
+        {!user && (
+          <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+        )}
         {user && (
           <TouchableOpacity style={styles.accountButton} onPress={handleAccountNavigation}>
             <Text style={styles.buttonText}>Account</Text>
           </TouchableOpacity>
         )}
       </View>
-
-      {/* Conditionally render the login button if the user is playing as a guest */}
-      {!user && (
-        <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-      )}
     </View>
   );
 };
@@ -147,66 +145,61 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   movieLabel: {
-    fontSize: 14,
+    fontSize: 16, // Increased font size
     fontWeight: 'bold',
-    marginBottom: 3,
+    marginBottom: 5,
   },
   poster: {
-    width: 100,
-    height: 150,
-    marginBottom: 5,
+    width: 120, // Adjusted size for larger layout
+    height: 180, // Adjusted size for larger layout
+    marginBottom: 10,
   },
   title: {
-    fontSize: 14,
+    fontSize: 16, // Increased font size
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 5,
+    marginBottom: 8, // Adjusted margin for spacing
   },
   subtitle: {
-    fontSize: 12,
-    marginBottom: 3,
+    fontSize: 14, // Increased font size
+    marginBottom: 5,
     textAlign: 'center',
   },
   actor: {
-    fontSize: 12,
-    marginVertical: 1,
+    fontSize: 14, // Increased font size
+    marginVertical: 2, // Slightly adjusted margin for better spacing
     textAlign: 'center',
   },
   buttonsContainer: {
-    position: 'absolute',
-    bottom: 30, // Add padding from the bottom
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: 20,
+    marginTop: 20,
   },
   shuffleButton: {
     backgroundColor: '#007BFF',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 25,
     borderRadius: 20,
+    marginBottom: 10,
   },
   startGameButton: {
     backgroundColor: '#4CAF50',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 25,
     borderRadius: 20,
-  },
-  accountButton: {
-    backgroundColor: '#FFA500', // Add a different color to distinguish the account button
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
+    marginBottom: 10,
   },
   loginButton: {
-    position: 'absolute',
-    top: 50, // Lowered from the top
-    alignSelf: 'center', // Center the button horizontally
     backgroundColor: '#007BFF',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 25,
     borderRadius: 20,
+    marginBottom: 10,
+  },
+  accountButton: {
+    backgroundColor: '#FFA500',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 20,
+    marginBottom: 10,
   },
   buttonText: {
     color: '#FFFFFF',

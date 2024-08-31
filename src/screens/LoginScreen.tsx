@@ -3,7 +3,6 @@ import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
@@ -48,7 +47,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
         navigation.navigate('RandomMovies'); // Navigate to the main app screen after login
       })
-      .catch(error => {
+      .catch((error: any) => {
         if (error.code === 'auth/invalid-email') {
           Alert.alert('Invalid Email Address');
         } else {
@@ -67,8 +66,8 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         console.log('No user is currently signed in');
       }
       navigation.navigate('RandomMovies'); // Allow guest access without login
-    } catch (error) {
-      console.error('Error signing out:', error);
+    } catch (error: any) {
+      console.error('Error signing out:', error.message);
     }
   };
 
@@ -90,13 +89,15 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         secureTextEntry
         style={styles.input}
       />
-      <Button title="Login" onPress={handleLogin} />
-      <Button
-        title="Register"
-        onPress={() => navigation.navigate('SignUp')}
-        color="#841584"
-      />
-      <Button title="Play as Guest" onPress={handleGuestPlay} />
+      <View style={styles.buttonContainer}>
+        <Button title="Login" onPress={handleLogin} />
+        <Button
+          title="Register"
+          onPress={() => navigation.navigate('SignUp')}
+          color="#841584"
+        />
+        <Button title="Play as Guest" onPress={handleGuestPlay} />
+      </View>
     </View>
   );
 };

@@ -1,32 +1,81 @@
-import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 type AccountOverviewScreenNavigationProp = StackNavigationProp<RootStackParamList, 'AccountOverviewScreen'>;
-type AccountOverviewScreenRouteProp = RouteProp<RootStackParamList, 'AccountOverviewScreen'>;
 
 type Props = {
   navigation: AccountOverviewScreenNavigationProp;
-  route: AccountOverviewScreenRouteProp;
 };
 
 const AccountOverviewScreen: React.FC<Props> = ({ navigation }) => {
-  const handleLogout = () => {
-    auth().signOut().then(() => {
-      navigation.replace('Login'); // Navigate back to the login screen after logout
-    });
-  };
+  const [userData, setUserData] = useState<{ firstName: string; lastName: string; email: string }>({
+    firstName: '',
+    lastName: '',
+    email: '',
+  });
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const user = auth().currentUser;
+      if (user) {
+        const userDoc = await firestore().collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+          setUserData({
+            firstName: userData?.firstName || '',
+            lastName: userData?.lastName || '',
+            email: user.email || '',
+          });
+        }
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Account Overview</Text>
-      <Button title="View Watchlist" onPress={() => navigation.navigate('WatchlistScreen')} />
-      <Button title="View Completed Connections" onPress={() => navigation.navigate('CompletedConnectionsScreen')} />
-      <Button title="Change Password" onPress={() => navigation.navigate('ChangePasswordScreen')} />
-      <Button title="Logout" onPress={handleLogout} color="red" />
+
+      {/* User Info */}
+      <Text style={styles.userInfo}>{`${userData.firstName} ${userData.lastName}`}</Text>
+      <Text style={styles.userInfo}>{userData.email}</Text>
+
+      {/* Button to navigate to Watchlist */}
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={() => navigation.navigate('WatchlistScreen', { watchlist: [], removeFromWatchlist: () => {} })}
+      >
+        <Text style={styles.buttonText}>View Watchlist</Text>
+      </TouchableOpacity>
+      
+      {/* Button to navigate to Completed Connections */}
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={() => navigation.navigate('CompletedConnectionsScreen', { completedConnections: [] })}
+      >
+        <Text style={styles.buttonText}>View Completed Connections</Text>
+      </TouchableOpacity>
+      
+      {/* Button to navigate to Login */}
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={() => navigation.navigate('Login')}
+      >
+        <Text style={styles.buttonText}>Log Out</Text>
+      </TouchableOpacity>
+      
+      {/* Button to navigate back to RandomMovies */}
+      <TouchableOpacity 
+        style={styles.button}
+        onPress={() => navigation.navigate('RandomMovies')}
+      >
+        <Text style={styles.buttonText}>Back to Movies</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -34,14 +83,33 @@ const AccountOverviewScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  userInfo: {
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 5,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    textAlign: 'center',
     marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginVertical: 10,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

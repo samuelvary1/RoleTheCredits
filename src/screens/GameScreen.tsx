@@ -8,6 +8,7 @@ import { TMDB_API_KEY } from '@env';
 import { Actor, Movie, PathNode } from '../types';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import { useWatchlist } from '../context/WatchlistContext';  // Adjust the import path as needed
 
 type GameScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GameScreen'>;
 type GameScreenRouteProp = RouteProp<RootStackParamList, 'GameScreen'>;
@@ -18,6 +19,8 @@ type Props = {
 };
 
 const GameScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { addToWatchlist } = useWatchlist();  // Use the custom hook to access the context
+
   const {
     movieA = { id: 0, title: 'Unknown Movie A', posterPath: '', actors: [], type: 'movie' },
     movieB = { id: 0, title: 'Unknown Movie B', posterPath: '', actors: [], type: 'movie' },
@@ -129,25 +132,13 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
 
-  const addToWatchlist = async (movie: Movie) => {
+  const handleAddToWatchlist = (movie: Movie) => {
     const user = auth().currentUser;
     if (user) {
-      try {
-        const userDocRef = firestore().collection('users').doc(user.uid);
-        
-        await userDocRef.update({
-          watchlist: firestore.FieldValue.arrayUnion({
-            id: movie.id,
-            title: movie.title,
-            posterPath: movie.posterPath,
-          }),
-        });
-
-        Alert.alert('Added to Watchlist', `${movie.title} has been added to your watchlist.`);
-      } catch (error) {
-        console.error('Error adding to watchlist:', error);
-        Alert.alert('Error', 'There was an error adding this movie to your watchlist. Please try again.');
-      }
+      addToWatchlist(movie);
+      Alert.alert('Watchlist', `${movie.title} has been added to your watchlist.`);
+    } else {
+      Alert.alert('Watchlist', 'You must make an account to save a watchlist!');
     }
   };
 
@@ -201,7 +192,7 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
             <Text style={styles.movieLabel}>
               {selectedActorA ? selectedActorA.name : currentMovieA.title}
             </Text>
-            <TouchableOpacity onPress={() => addToWatchlist(currentMovieA)}>
+            <TouchableOpacity onPress={() => handleAddToWatchlist(currentMovieA)}>
               <Image
                 source={{
                   uri: selectedActorA?.profilePath
@@ -251,7 +242,7 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
             <Text style={styles.movieLabel}>
               {selectedActorB ? selectedActorB.name : currentMovieB.title}
             </Text>
-            <TouchableOpacity onPress={() => addToWatchlist(currentMovieB)}>
+            <TouchableOpacity onPress={() => handleAddToWatchlist(currentMovieB)}>
               <Image
                 source={{
                   uri: selectedActorB?.profilePath

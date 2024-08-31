@@ -1,50 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-import { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
+import React from 'react';
+import { View, Text, Button, StyleSheet } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
+import { RootStackParamList } from '../navigation/AppNavigator';
 
-type CompletedConnection = {
-  movieA: string;
-  movieB: string;
-  moves: number;
-  timestamp: FirebaseFirestoreTypes.Timestamp;
+type CompletedConnectionsScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'CompletedConnectionsScreen'
+>;
+
+type CompletedConnectionsScreenRouteProp = RouteProp<
+  RootStackParamList,
+  'CompletedConnectionsScreen'
+>;
+
+type Props = {
+  navigation: CompletedConnectionsScreenNavigationProp;
+  route: CompletedConnectionsScreenRouteProp;
 };
 
-const CompletedConnectionsScreen: React.FC = () => {
-  const [completedConnections, setCompletedConnections] = useState<CompletedConnection[]>([]);
-
-  useEffect(() => {
-    const fetchCompletedConnections = async () => {
-      const user = auth().currentUser;
-      if (user) {
-        const userDoc = await firestore().collection('users').doc(user.uid).get();
-        const data = userDoc.data();
-        setCompletedConnections(data?.completedConnections || []);
-      }
-    };
-
-    fetchCompletedConnections();
-  }, []);
-
-  const renderConnection = ({ item }: { item: CompletedConnection }) => (
-    <View style={styles.connectionItem}>
-      <Text style={styles.movieText}>Movie A: {item.movieA}</Text>
-      <Text style={styles.movieText}>Movie B: {item.movieB}</Text>
-      <Text style={styles.movesText}>Moves: {item.moves}</Text>
-      <Text style={styles.timestampText}>
-        Completed on: {item.timestamp?.toDate().toLocaleDateString()}
-      </Text>
-    </View>
-  );
+const CompletedConnectionsScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { completedConnections } = route.params;
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={completedConnections}
-        renderItem={renderConnection}
-        keyExtractor={(item, index) => index.toString()}
-      />
+      <Text style={styles.title}>Completed Connections</Text>
+      {/* Render the completed connections list here */}
+      <Button title="Back to Account Overview" onPress={() => navigation.goBack()} />
     </View>
   );
 };
@@ -52,25 +34,13 @@ const CompletedConnectionsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f5f5f5',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  connectionItem: {
-    padding: 15,
-    marginVertical: 8,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-  },
-  movieText: {
-    fontSize: 16,
-  },
-  movesText: {
-    fontSize: 14,
-    color: 'gray',
-  },
-  timestampText: {
-    fontSize: 12,
-    color: 'gray',
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
 });
 

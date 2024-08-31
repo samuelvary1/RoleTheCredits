@@ -1,74 +1,111 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Image, StyleSheet } from 'react-native';
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
+import React from 'react';
+import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../navigation/AppNavigator';
+import { useWatchlist } from '../context/WatchlistContext'; // Import the custom hook
 import { Movie } from '../types';
+import { Icon } from 'react-native-elements'; // Import Icon from react-native-elements
 
-const WatchlistScreen = () => {
-  const [watchlist, setWatchlist] = useState<Movie[]>([]);
+type WatchlistScreenNavigationProp = StackNavigationProp<RootStackParamList, 'WatchlistScreen'>;
 
-  useEffect(() => {
-    const user = auth().currentUser;
-    if (user) {
-      const unsubscribe = firestore()
-        .collection('users')
-        .doc(user.uid)
-        .onSnapshot((doc) => {
-          if (doc.exists) {
-            setWatchlist(doc.data()?.watchlist || []);
-          }
-        });
+type Props = {
+  navigation: WatchlistScreenNavigationProp;
+};
 
-      return () => unsubscribe();
-    }
-  }, []);
+const WatchlistScreen: React.FC<Props> = ({ navigation }) => {
+  const { watchlist, removeFromWatchlist } = useWatchlist(); // Use the custom hook
+
+  const renderItem = ({ item }: { item: Movie }) => (
+    <View style={styles.itemContainer}>
+      <Image source={{ uri: `https://image.tmdb.org/t/p/w200${item.posterPath}` }} style={styles.poster} />
+      <View style={styles.movieDetails}>
+        <Text style={styles.movieTitle}>{item.title}</Text>
+        <TouchableOpacity
+          onPress={() => removeFromWatchlist(item.id)}
+          style={styles.deleteIconContainer}
+        >
+          <Icon
+            name="delete"
+            type="material"
+            color="#FF6347"
+            size={24}
+          />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.title}>Your Watchlist</Text>
-      {watchlist.length === 0 ? (
-        <Text style={styles.emptyText}>Your watchlist is empty.</Text>
-      ) : (
-        watchlist.map((movie, index) => (
-          <View key={index} style={styles.movieContainer}>
-            <Image
-              source={{ uri: `https://image.tmdb.org/t/p/w500${movie.posterPath}` }}
-              style={styles.poster}
-            />
-            <Text style={styles.movieTitle}>{movie.title}</Text>
-          </View>
-        ))
-      )}
-    </ScrollView>
+      <FlatList
+        data={watchlist}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id.toString()}
+        ListEmptyComponent={<Text style={styles.emptyMessage}>Your watchlist is empty.</Text>}
+      />
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+      >
+        <Text style={styles.backButtonText}>Back to Account Overview</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 20,
+    paddingTop: 60, // Adjust padding to move content down
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    textAlign: 'center',
     marginBottom: 20,
   },
-  emptyText: {
-    fontSize: 16,
-    color: 'gray',
-    textAlign: 'center',
-    marginTop: 20,
-  },
-  movieContainer: {
+  itemContainer: {
+    flexDirection: 'row',
     marginBottom: 20,
     alignItems: 'center',
   },
   poster: {
-    width: 150,
-    height: 225,
-    resizeMode: 'cover',
-    marginBottom: 10,
+    width: 50,
+    height: 75,
+    marginRight: 15,
+    borderRadius: 5,
+  },
+  movieDetails: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   movieTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  deleteIconContainer: {
+    padding: 5,
+  },
+  emptyMessage: {
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 16,
+    color: 'gray',
+  },
+  backButton: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    alignSelf: 'center',
+    marginTop: 20,
+  },
+  backButtonText: {
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
