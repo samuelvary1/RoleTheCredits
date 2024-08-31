@@ -138,8 +138,8 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
   
         // First, create the completed connection object without the timestamp
         const completedConnection = {
-          movieA: currentMovieA.title,
-          movieB: currentMovieB.title,
+          movieA: movieA.title,
+          movieB: movieB.title,
           moves: path.length - 1, // subtract 1 to not count the starting node
         };
   
