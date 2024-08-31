@@ -3,9 +3,10 @@ import { View, Text, ScrollView, ActivityIndicator, StyleSheet, Image, Touchable
 import axios from 'axios';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
-import { TMDB_API_KEY } from '@env';
 import { Movie } from '../types';
+import { TMDB_API_KEY } from '@env';
 
+console.log(TMDB_API_KEY);
 type RandomMoviesNavigationProp = StackNavigationProp<RootStackParamList, 'RandomMovies'>;
 
 type Props = {

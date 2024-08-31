@@ -52,6 +52,7 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
       setLoadingB(true);
     }
 
+    console.log(TMDB_API_KEY);
     try {
       const actorResponse = await axios.get(
         `https://api.themoviedb.org/3/person/${actorId}?api_key=${TMDB_API_KEY}&language=en-US`
