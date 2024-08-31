@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import auth from '@react-native-firebase/auth'; // Assuming Firebase is used
+import auth from '@react-native-firebase/auth'; 
+import firestore from '@react-native-firebase/firestore'; 
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -18,9 +19,34 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const handleLogin = () => {
     auth()
       .signInWithEmailAndPassword(email, password)
-      .then(() => {
+      .then(async userCredential => {
         console.log('User signed in!');
-        navigation.navigate('RandomMovies'); // Navigate to the main app screen
+        const { uid } = userCredential.user;
+
+        // Create or update the user document in Firestore
+        const userDocRef = firestore().collection('users').doc(uid);
+
+        try {
+          const userDoc = await userDocRef.get();
+          if (!userDoc.exists) {
+            await userDocRef.set({
+              email: userCredential.user.email,
+              displayName: userCredential.user.displayName || "",
+              createdAt: firestore.FieldValue.serverTimestamp(),
+              lastLogin: firestore.FieldValue.serverTimestamp(),
+              completedConnections: [],
+              watchlist: [],
+            });
+          } else {
+            await userDocRef.update({
+              lastLogin: firestore.FieldValue.serverTimestamp(),
+            });
+          }
+        } catch (error) {
+          console.error('Error creating or updating user document:', error);
+        }
+
+        navigation.navigate('RandomMovies'); // Navigate to the main app screen after login
       })
       .catch(error => {
         if (error.code === 'auth/invalid-email') {

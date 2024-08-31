@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
@@ -14,6 +15,8 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [firstName, setFirstName] = useState<string>('');
+  const [lastName, setLastName] = useState<string>('');
 
   const handleSignUp = () => {
     if (password !== confirmPassword) {
@@ -23,9 +26,30 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
 
     auth()
       .createUserWithEmailAndPassword(email, password)
-      .then(() => {
-        console.log('User account created & signed in!');
-        navigation.navigate('RandomMovies'); // Navigate to the main app screen after sign-up
+      .then(userCredential => {
+        const { uid } = userCredential.user;
+        const timestamp = firestore.FieldValue.serverTimestamp();
+
+        firestore()
+          .collection('users')
+          .doc(uid)
+          .set({
+            firstName,
+            lastName,
+            email,
+            completedConnections: [], // Initialize with an empty array
+            watchlist: [], // Initialize with an empty watchlist
+            createdAt: timestamp, // Record the time the user was created
+            lastLogin: timestamp, // Record the time the user last logged in (same as created at signup)
+          })
+          .then(() => {
+            console.log('User document created!');
+            navigation.navigate('RandomMovies'); // Navigate to the main app screen after sign-up
+          })
+          .catch(error => {
+            console.error('Error creating user document:', error);
+            Alert.alert('Error creating user document:', error.message);
+          });
       })
       .catch(error => {
         if (error.code === 'auth/email-already-in-use') {
@@ -41,6 +65,18 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create an Account</Text>
+      <TextInput
+        placeholder="First Name"
+        value={firstName}
+        onChangeText={setFirstName}
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Last Name"
+        value={lastName}
+        onChangeText={setLastName}
+        style={styles.input}
+      />
       <TextInput
         placeholder="Email"
         value={email}

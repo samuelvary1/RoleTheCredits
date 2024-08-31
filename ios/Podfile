@@ -18,8 +18,13 @@ target 'RoleTheCredits' do
   pod 'FirebaseCore', :modular_headers => true;
   pod 'GoogleUtilities', :modular_headers => true;
   pod 'FirebaseAuth', :modular_headers => true;
+  pod 'Firebase/Firestore', :modular_headers => true;
+  pod 'FirebaseCoreExtension', :modular_headers => true;
+  pod 'FirebaseFirestoreInternal', :modular_headers => true;
   pod 'ReactNativeNavigation', :path => '../node_modules/react-native-navigation'
   config = use_native_modules!
+  use_frameworks! :linkage => :static
+
 
   use_react_native!(
     :path => config[:reactNativePath],

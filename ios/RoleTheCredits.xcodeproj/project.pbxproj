@@ -8,14 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* RoleTheCreditsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* RoleTheCreditsTests.m */; };
-		0C80B921A6F3F58F76C31292 /* libPods-RoleTheCredits.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-RoleTheCredits.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		296D36552C80D70F00FC30DD /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 296D36542C80D70F00FC30DD /* GoogleService-Info.plist */; };
 		531A713E223DBED021827D96 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 74A08C7724C081C1E0BE969A /* PrivacyInfo.xcprivacy */; };
-		7699B88040F8A987B510C191 /* libPods-RoleTheCredits-RoleTheCreditsTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-RoleTheCredits-RoleTheCreditsTests.a */; };
+		6D08FB22EF2EAA2A1BC804AD /* Pods_RoleTheCredits.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 837041EAB005D07507056CA4 /* Pods_RoleTheCredits.framework */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		A01B09F52B3C291627B59635 /* Pods_RoleTheCredits_RoleTheCreditsTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11AE32D95FBD89851AB3ECB2 /* Pods_RoleTheCredits_RoleTheCreditsTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,6 +32,7 @@
 		00E356EE1AD99517003FC87E /* RoleTheCreditsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RoleTheCreditsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* RoleTheCreditsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RoleTheCreditsTests.m; sourceTree = "<group>"; };
+		11AE32D95FBD89851AB3ECB2 /* Pods_RoleTheCredits_RoleTheCreditsTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RoleTheCredits_RoleTheCreditsTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* RoleTheCredits.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RoleTheCredits.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = RoleTheCredits/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = RoleTheCredits/AppDelegate.mm; sourceTree = "<group>"; };
@@ -39,15 +40,22 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = RoleTheCredits/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = RoleTheCredits/main.m; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = RoleTheCredits/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		19F6CBCC0A4E27FBF8BF4A61 /* libPods-RoleTheCredits-RoleTheCreditsTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RoleTheCredits-RoleTheCreditsTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		290A811F2C8113E100A0ACE5 /* FontAwesome.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
+		292E92E72C8368B6003B70DA /* libFirebaseCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFirebaseCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		292E92E92C8368D4003B70DA /* libFirebaseFirestore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFirebaseFirestore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		292E92EB2C8368F5003B70DA /* libFirebaseAuth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFirebaseAuth.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		292E92ED2C8368F5003B70DA /* libFirebaseCoreExtension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFirebaseCoreExtension.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		292E92EF2C8368F5003B70DA /* libFirebaseCoreInternal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFirebaseCoreInternal.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		292E92F12C8368F5003B70DA /* libFirebaseFirestoreInternal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFirebaseFirestoreInternal.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		292E92F32C8368F5003B70DA /* libFirebaseSharedSwift.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFirebaseSharedSwift.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		292E92F52C836BCB003B70DA /* libFirebaseFirestoreInternal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFirebaseFirestoreInternal.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		296D36542C80D70F00FC30DD /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-RoleTheCredits.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RoleTheCredits.debug.xcconfig"; path = "Target Support Files/Pods-RoleTheCredits/Pods-RoleTheCredits.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-RoleTheCredits.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RoleTheCredits.release.xcconfig"; path = "Target Support Files/Pods-RoleTheCredits/Pods-RoleTheCredits.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-RoleTheCredits-RoleTheCreditsTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RoleTheCredits-RoleTheCreditsTests.debug.xcconfig"; path = "Target Support Files/Pods-RoleTheCredits-RoleTheCreditsTests/Pods-RoleTheCredits-RoleTheCreditsTests.debug.xcconfig"; sourceTree = "<group>"; };
-		5DCACB8F33CDC322A6C60F78 /* libPods-RoleTheCredits.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RoleTheCredits.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		74A08C7724C081C1E0BE969A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = RoleTheCredits/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = RoleTheCredits/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		837041EAB005D07507056CA4 /* Pods_RoleTheCredits.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RoleTheCredits.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-RoleTheCredits-RoleTheCreditsTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RoleTheCredits-RoleTheCreditsTests.release.xcconfig"; path = "Target Support Files/Pods-RoleTheCredits-RoleTheCreditsTests/Pods-RoleTheCredits-RoleTheCreditsTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -57,7 +65,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7699B88040F8A987B510C191 /* libPods-RoleTheCredits-RoleTheCreditsTests.a in Frameworks */,
+				A01B09F52B3C291627B59635 /* Pods_RoleTheCredits_RoleTheCreditsTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,7 +73,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0C80B921A6F3F58F76C31292 /* libPods-RoleTheCredits.a in Frameworks */,
+				6D08FB22EF2EAA2A1BC804AD /* Pods_RoleTheCredits.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,9 +116,17 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				292E92F52C836BCB003B70DA /* libFirebaseFirestoreInternal.a */,
+				292E92EB2C8368F5003B70DA /* libFirebaseAuth.a */,
+				292E92ED2C8368F5003B70DA /* libFirebaseCoreExtension.a */,
+				292E92EF2C8368F5003B70DA /* libFirebaseCoreInternal.a */,
+				292E92F12C8368F5003B70DA /* libFirebaseFirestoreInternal.a */,
+				292E92F32C8368F5003B70DA /* libFirebaseSharedSwift.a */,
+				292E92E92C8368D4003B70DA /* libFirebaseFirestore.a */,
+				292E92E72C8368B6003B70DA /* libFirebaseCore.a */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				5DCACB8F33CDC322A6C60F78 /* libPods-RoleTheCredits.a */,
-				19F6CBCC0A4E27FBF8BF4A61 /* libPods-RoleTheCredits-RoleTheCreditsTests.a */,
+				837041EAB005D07507056CA4 /* Pods_RoleTheCredits.framework */,
+				11AE32D95FBD89851AB3ECB2 /* Pods_RoleTheCredits_RoleTheCreditsTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -588,6 +604,17 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD = "";
 				LDPLUSPLUS = "";
@@ -665,6 +692,17 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers/react/nativemodule/core",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon-Samples/ReactCommon_Samples.framework/Headers/platform/ios",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-Fabric/React_Fabric.framework/Headers/react/renderer/components/view/platform/cxx",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
+					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD = "";
 				LDPLUSPLUS = "";
