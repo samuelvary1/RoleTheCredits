@@ -1,12 +1,11 @@
-import { createStore, applyMiddleware, Reducer, Store, AnyAction } from 'redux';
+import { createStore, applyMiddleware, Reducer } from 'redux';
 import thunk, { ThunkMiddleware } from 'redux-thunk';
 import { persistReducer, persistStore } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { PersistPartial } from 'redux-persist/es/persistReducer';
-import { AppState, CombinedActions } from '../types'; // Assuming you have CombinedActions in your types
+import { AppState, CombinedActions, CompletedConnectionsState, WatchlistState } from '../types'; 
 import watchlistReducer from './watchlistReducer';
 import completedConnectionsReducer from './completedConnectionsReducer';
-import { REHYDRATE } from 'redux-persist/es/constants';
 
 // Persist configs
 const watchlistPersistConfig = {
@@ -20,33 +19,33 @@ const completedConnectionsPersistConfig = {
 };
 
 // Persisted reducers
-const persistedWatchlistReducer = persistReducer(
+const persistedWatchlistReducer = persistReducer<WatchlistState & PersistPartial, CombinedActions>(
   watchlistPersistConfig,
-  watchlistReducer as Reducer<AppState['watchlist'], CombinedActions>
+  watchlistReducer as Reducer<WatchlistState & PersistPartial, CombinedActions>
 );
 
-const persistedCompletedConnectionsReducer = persistReducer(
+const persistedCompletedConnectionsReducer = persistReducer<CompletedConnectionsState & PersistPartial, CombinedActions>(
   completedConnectionsPersistConfig,
-  completedConnectionsReducer as Reducer<AppState['completedConnections'], CombinedActions>
+  completedConnectionsReducer as Reducer<CompletedConnectionsState & PersistPartial, CombinedActions>
 );
 
 // Root reducer
 const rootReducer: Reducer<AppState & PersistPartial, CombinedActions> = (
-  state,
-  action
-) => ({
+  state: (AppState & PersistPartial) | undefined,
+  action: CombinedActions
+): AppState & PersistPartial => ({
   watchlist: persistedWatchlistReducer(state?.watchlist, action),
   completedConnections: persistedCompletedConnectionsReducer(state?.completedConnections, action),
   _persist: state?._persist as PersistPartial['_persist'],
 });
 
 // Middleware setup
-const middleware = [thunk as unknown as ThunkMiddleware<AppState & PersistPartial, CombinedActions>];
+const middleware = [thunk as unknown as ThunkMiddleware<AppState & PersistPartial, CombinedActions>]; // Cast thunk as ThunkMiddleware
 
 // Create the store
-const store: Store<AppState & PersistPartial, CombinedActions> = createStore(
+const store = createStore(
   rootReducer,
-  applyMiddleware(...middleware)
+  applyMiddleware(...middleware) // Apply middleware correctly
 );
 
 const persistor = persistStore(store);

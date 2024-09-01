@@ -24,7 +24,6 @@ const Stack = createStackNavigator<RootStackParamList>();
 const App: React.FC = () => {
   return (
     <Provider store={store}>
-      {/* PersistGate ensures that the Redux state is rehydrated before the app renders */}
       <PersistGate loading={null} persistor={persistor}>
         <NavigationContainer>
           <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
