@@ -45,7 +45,12 @@ const CompletedConnectionsScreen: React.FC<Props> = ({ navigation }) => {
         ListEmptyComponent={<Text style={styles.emptyMessage}>No completed connections yet.</Text>}
         contentContainerStyle={styles.flatListContent}
       />
-      <Button title="Back to Account Overview" onPress={() => navigation.goBack()} />
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+      >
+        <Text style={styles.backButtonText}>Back to Account Overview</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -99,6 +104,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'gray',
     marginTop: 20,
+    textAlign: 'center',
+  },
+  backButton: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    alignSelf: 'center',
+    marginTop: 20,
+  },
+  backButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
     textAlign: 'center',
   },
 });
