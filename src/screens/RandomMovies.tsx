@@ -21,21 +21,21 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
     try {
       const randomPage = Math.floor(Math.random() * 500) + 1;
       const movieResponse = await axios.get(
-        `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&language=en-US&page=${randomPage}`
+        `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&language=en-US&page=${randomPage}&region=US&with_original_language=en`
       );
-
+  
       const randomMovieIndex = Math.floor(Math.random() * movieResponse.data.results.length);
       const movie = movieResponse.data.results[randomMovieIndex];
-
+  
       const creditsResponse = await axios.get(
         `https://api.themoviedb.org/3/movie/${movie.id}/credits?api_key=${TMDB_API_KEY}&language=en-US`
       );
-
+  
       const topActors = creditsResponse.data.cast.slice(0, 10).map((actor: any) => ({
         name: actor.name,
         id: actor.id,
       }));
-
+  
       return {
         id: movie.id,
         title: movie.title,

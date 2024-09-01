@@ -6,9 +6,9 @@ import { RootStackParamList } from '../navigation/AppNavigator';
 import axios from 'axios';
 import { TMDB_API_KEY } from '@env';
 import { Actor, Movie, PathNode } from '../types';
-import firestore from '@react-native-firebase/firestore';
+import { useWatchlist } from '../context/WatchlistContext';
+import { useCompletedConnections } from '../context/CompletedConnectionsContext';
 import auth from '@react-native-firebase/auth';
-import { useWatchlist } from '../context/WatchlistContext';  // Adjust the import path as needed
 
 type GameScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GameScreen'>;
 type GameScreenRouteProp = RouteProp<RootStackParamList, 'GameScreen'>;
@@ -19,7 +19,8 @@ type Props = {
 };
 
 const GameScreen: React.FC<Props> = ({ navigation, route }) => {
-  const { addToWatchlist } = useWatchlist();  // Use the custom hook to access the context
+  const { addToWatchlist } = useWatchlist();
+  const { addCompletedConnection } = useCompletedConnections();
 
   const {
     movieA = { id: 0, title: 'Unknown Movie A', posterPath: '', actors: [], type: 'movie' },
@@ -76,7 +77,7 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
       const moviesResponse = await axios.get(
         `https://api.themoviedb.org/3/person/${actorId}/movie_credits?api_key=${TMDB_API_KEY}&language=en-US`
       );
-      const movies = moviesResponse.data.cast.map((movie: any, index: number) => ({
+      const movies = moviesResponse.data.cast.map((movie: any) => ({
         id: movie.id,
         title: movie.title,
         posterPath: movie.poster_path,
@@ -106,7 +107,7 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
       const response = await axios.get(
         `https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${TMDB_API_KEY}&language=en-US`
       );
-      const actors = response.data.cast.slice(0, 10).map((actor: any, index: number) => ({
+      const actors = response.data.cast.slice(0, 10).map((actor: any) => ({
         id: actor.id,
         name: actor.name,
         profilePath: actor.profile_path,
@@ -143,36 +144,21 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   // Handle the win condition when a connection is confirmed
-  const handleWin = async () => {
+  const handleWin = () => {
     const user = auth().currentUser;
+  
     if (user) {
-      try {
-        const userDocRef = firestore().collection('users').doc(user.uid);
+      const completedConnection = {
+        movieA: currentMovieA,
+        movieB: currentMovieB,
+        moves: path.length - 1, // subtract 1 to not count the starting node
+      };
   
-        // First, create the completed connection object without the timestamp
-        const completedConnection = {
-          movieA: movieA.title,
-          movieB: movieB.title,
-          moves: path.length - 1, // subtract 1 to not count the starting node
-        };
-  
-        // Update the document to add the new connection
-        await userDocRef.update({
-          completedConnections: firestore.FieldValue.arrayUnion(completedConnection),
-        });
-  
-        // Add the timestamp in a separate update call
-        const timestamp = firestore.FieldValue.serverTimestamp();
-        await userDocRef.update({
-          [`completedConnections.${path.length - 1}.timestamp`]: timestamp,
-        });
-  
-        Alert.alert(`Congratulations! You've connected the movies in ${path.length - 1} moves!`);
-        navigation.navigate('RandomMovies'); // Navigate back to the movie selection screen
-      } catch (error) {
-        console.error('Error updating completed connections:', error);
-      }
+      addCompletedConnection(completedConnection);
     }
+  
+    Alert.alert(`Congratulations! You've connected the movies in ${path.length - 1} moves!`);
+    navigation.navigate('RandomMovies'); // Navigate back to the movie selection screen
   };
 
   const handleConfirmConnection = () => {
@@ -214,7 +200,7 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
               <ScrollView>
                 {actorMoviesA.map((item, index) => (
                   <TouchableOpacity
-                    key={`A-${item.id}-${index}`} // Unique key by combining side, id, and index
+                    key={`A-${item.id}-${index}`}
                     style={styles.actorContainer}
                     onPress={() => handleMoviePress(item.id, item.title, item.posterPath, 'A')}
                   >
@@ -226,7 +212,7 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
               <ScrollView>
                 {currentActorsA.map((actor, index) => (
                   <TouchableOpacity
-                    key={`A-${actor.id}-${index}`} // Unique key by combining side, id, and index
+                    key={`A-${actor.id}-${index}`}
                     style={styles.actorContainer}
                     onPress={() => handleActorPress(actor.id, actor.name, 'A')}
                   >
@@ -264,7 +250,7 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
               <ScrollView>
                 {actorMoviesB.map((item, index) => (
                   <TouchableOpacity
-                    key={`B-${item.id}-${index}`} // Unique key by combining side, id, and index
+                    key={`B-${item.id}-${index}`}
                     style={styles.actorContainer}
                     onPress={() => handleMoviePress(item.id, item.title, item.posterPath, 'B')}
                   >
@@ -276,7 +262,7 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
               <ScrollView>
                 {currentActorsB.map((actor, index) => (
                   <TouchableOpacity
-                    key={`B-${actor.id}-${index}`} // Unique key by combining side, id, and index
+                    key={`B-${actor.id}-${index}`}
                     style={styles.actorContainer}
                     onPress={() => handleActorPress(actor.id, actor.name, 'B')}
                   >
@@ -352,7 +338,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 25,
-    marginBottom: 10,  // Adjust margin to sit above the start over button
+    marginBottom: 10,
     alignSelf: 'center',
   },
   confirmButtonText: {
