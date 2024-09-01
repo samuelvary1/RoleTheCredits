@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Button, SafeAreaView } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Button, SafeAreaView, Image } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { useCompletedConnections } from '../context/CompletedConnectionsContext';
-import { Movie } from '../types';
+import { CompletedConnection, Movie } from '../types';
 
 type CompletedConnectionsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -15,23 +15,44 @@ type Props = {
 };
 
 const CompletedConnectionsScreen: React.FC<Props> = ({ navigation }) => {
-  const { completedConnections } = useCompletedConnections();
+  const { completedConnections, removeCompletedConnection } = useCompletedConnections();
+  const handleDelete = (id: string) => {
+    removeCompletedConnection(id);
+  };
 
-  const renderItem = ({ item }: { item: { movieA: Movie; movieB: Movie; moves: number } }) => (
+  const renderItem = ({ item, index }: { item: { id: string; movieA: Movie; movieB: Movie; moves: number }, index: number }) => (
     <View style={styles.itemContainer}>
-      <Text style={styles.movieTitle}>{`${item.movieA.title} to ${item.movieB.title}`}</Text>
-      <Text style={styles.movesText}>{`Moves: ${item.moves}`}</Text>
-      <TouchableOpacity
-        style={styles.tryAgainButton}
-        onPress={() =>
-          navigation.navigate('GameScreen', {
-            movieA: item.movieA,
-            movieB: item.movieB,
-          })
-        }
-      >
-        <Text style={styles.buttonText}>Try this pair again</Text>
-      </TouchableOpacity>
+      <View style={styles.posterContainer}>
+        <Image
+          source={{ uri: item.movieA.posterPath }}
+          style={styles.posterImage}
+        />
+        <Image
+          source={{ uri: item.movieB.posterPath }}
+          style={styles.posterImage}
+        />
+      </View>
+      <View style={styles.textContainer}>
+        <Text style={styles.movieTitle}>{`${item.movieA.title} to ${item.movieB.title}`}</Text>
+        <Text style={styles.movesText}>{`Moves: ${item.moves}`}</Text>
+        <TouchableOpacity
+          style={styles.tryAgainButton}
+          onPress={() =>
+            navigation.navigate('GameScreen', {
+              movieA: item.movieA,
+              movieB: item.movieB,
+            })
+          }
+        >
+          <Text style={styles.buttonText}>Try this pair again</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => handleDelete(item.id)}
+        >
+          <Text style={styles.buttonText}>Delete</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -72,6 +93,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
+  posterImage: {
+    width: 50,
+    height: 75,
+    borderRadius: 5,
+    marginRight: 10,
+  },
+  textContainer: {
+    flex: 1,
+  },
   itemContainer: {
     marginBottom: 20,
     alignItems: 'center',
@@ -86,6 +116,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
     textAlign: 'center',
+  },
+  posterContainer: {
+    flexDirection: 'row',
+    marginRight: 15,
   },
   tryAgainButton: {
     backgroundColor: '#4CAF50',
@@ -120,6 +154,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
+  deleteButton: {
+    backgroundColor: '#FF4136',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginTop: 10,
+  }
 });
 
 export default CompletedConnectionsScreen;

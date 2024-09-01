@@ -56,6 +56,7 @@ export type WatchlistActionTypes = AddToWatchlistAction | RemoveFromWatchlistAct
 export const ADD_COMPLETED_CONNECTION = 'ADD_COMPLETED_CONNECTION';
 
 export interface CompletedConnection {
+  id: string;
   movieA: Movie;
   movieB: Movie;
   moves: number;
