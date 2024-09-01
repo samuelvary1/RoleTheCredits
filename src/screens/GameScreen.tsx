@@ -10,6 +10,7 @@ import auth from '@react-native-firebase/auth';
 import { useDispatch } from 'react-redux';
 
 import { addCompletedConnection } from '../actions/CompletedConnectionsActions';
+import { useWatchlist } from '../context/WatchlistContext';
 
 
 type GameScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GameScreen'>;
@@ -21,6 +22,7 @@ type Props = {
 };
 
 const GameScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { watchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();  
   const dispatch = useDispatch();
 
   const {
@@ -134,8 +136,9 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
 
-  const handleAddToWatchlist = (movie: Movie) => {
-    dispatch(addToWatchlist(movie));
+  const handleAddToWatchlist = (movie: Movie) => {    
+    addToWatchlist(movie);
+    Alert.alert('Success', 'Successfully added to watchlist');
   };
 
   // Handle the win condition when a connection is confirmed
@@ -358,7 +361,4 @@ const styles = StyleSheet.create({
 });
 
 export default GameScreen;
-function addToWatchlist(movie: Movie): any {
-  throw new Error('Function not implemented.');
-}
 

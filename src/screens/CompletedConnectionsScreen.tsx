@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Button } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Button, SafeAreaView } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { useCompletedConnections } from '../context/CompletedConnectionsContext';
@@ -36,30 +36,36 @@ const CompletedConnectionsScreen: React.FC<Props> = ({ navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Completed Connections</Text>
       <FlatList
         data={completedConnections}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
         ListEmptyComponent={<Text style={styles.emptyMessage}>No completed connections yet.</Text>}
+        contentContainerStyle={styles.flatListContent}
       />
       <Button title="Back to Account Overview" onPress={() => navigation.goBack()} />
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  flatListContent: {
+    paddingBottom: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    textAlign: 'center',
   },
   itemContainer: {
     marginBottom: 20,
@@ -69,10 +75,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,
+    textAlign: 'center',
   },
   movesText: {
     fontSize: 16,
     marginBottom: 10,
+    textAlign: 'center',
   },
   tryAgainButton: {
     backgroundColor: '#4CAF50',

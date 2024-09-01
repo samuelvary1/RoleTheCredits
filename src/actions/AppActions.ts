@@ -17,6 +17,7 @@ export type Movie = {
   type: 'movie'; // Ensure the type is always 'movie'
 };
 
+
 // Type for PathNode in the game
 export type PathNode = {
   id: number;
