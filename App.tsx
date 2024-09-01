@@ -1,4 +1,8 @@
+// App.tsx
 import React from 'react';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from './src/store';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './src/screens/LoginScreen';
@@ -11,25 +15,19 @@ import GameScreen from './src/screens/GameScreen';
 import ConnectionPathScreen from './src/screens/ConnectionPathScreen';
 import AccountOverviewScreen from './src/screens/AccountOverviewScreen';
 import CompletedConnectionsScreen from './src/screens/CompletedConnectionsScreen';
-import { RootStackParamList } from './src/navigation/AppNavigator';
 import ChangePasswordScreen from './src/screens/ChangePasswordScreen';
 import WatchlistScreen from './src/screens/WatchlistScreen';
-import { WatchlistProvider } from './src/context/WatchlistContext';
-import { CompletedConnectionsProvider } from './src/context/CompletedConnectionsContext';
+import { RootStackParamList } from './src/navigation/AppNavigator';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 const App: React.FC = () => {
   return (
-    <CompletedConnectionsProvider>
-      <WatchlistProvider>
+    <Provider store={store}>
+      {/* PersistGate ensures that the Redux state is rehydrated before the app renders */}
+      <PersistGate loading={null} persistor={persistor}>
         <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName="Login"
-            screenOptions={{
-              headerShown: false,  // Optionally hide headers globally
-            }}
-          >
+          <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="SignUp" component={SignUpScreen} />
             <Stack.Screen name="RandomMovies" component={RandomMovies} />
@@ -44,8 +42,8 @@ const App: React.FC = () => {
             <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />
           </Stack.Navigator>
         </NavigationContainer>
-      </WatchlistProvider>
-    </CompletedConnectionsProvider>
+      </PersistGate>
+    </Provider>
   );
 };
 

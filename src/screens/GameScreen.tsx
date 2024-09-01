@@ -6,9 +6,11 @@ import { RootStackParamList } from '../navigation/AppNavigator';
 import axios from 'axios';
 import { TMDB_API_KEY } from '@env';
 import { Actor, Movie, PathNode } from '../types';
-import { useWatchlist } from '../context/WatchlistContext';
-import { useCompletedConnections } from '../context/CompletedConnectionsContext';
 import auth from '@react-native-firebase/auth';
+import { useDispatch } from 'react-redux';
+
+import { addCompletedConnection } from '../actions/CompletedConnectionsActions';
+
 
 type GameScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GameScreen'>;
 type GameScreenRouteProp = RouteProp<RootStackParamList, 'GameScreen'>;
@@ -19,8 +21,7 @@ type Props = {
 };
 
 const GameScreen: React.FC<Props> = ({ navigation, route }) => {
-  const { addToWatchlist } = useWatchlist();
-  const { addCompletedConnection } = useCompletedConnections();
+  const dispatch = useDispatch();
 
   const {
     movieA = { id: 0, title: 'Unknown Movie A', posterPath: '', actors: [], type: 'movie' },
@@ -134,13 +135,7 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   const handleAddToWatchlist = (movie: Movie) => {
-    const user = auth().currentUser;
-    if (user) {
-      addToWatchlist(movie);
-      Alert.alert('Watchlist', `${movie.title} has been added to your watchlist.`);
-    } else {
-      Alert.alert('Watchlist', 'You must make an account to save a watchlist!');
-    }
+    dispatch(addToWatchlist(movie));
   };
 
   // Handle the win condition when a connection is confirmed
@@ -363,3 +358,7 @@ const styles = StyleSheet.create({
 });
 
 export default GameScreen;
+function addToWatchlist(movie: Movie): any {
+  throw new Error('Function not implemented.');
+}
+

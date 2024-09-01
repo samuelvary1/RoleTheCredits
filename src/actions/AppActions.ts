@@ -30,24 +30,18 @@ export type PathNode = {
 export const ADD_TO_WATCHLIST = 'ADD_TO_WATCHLIST';
 export const REMOVE_FROM_WATCHLIST = 'REMOVE_FROM_WATCHLIST';
 
-export interface WatchlistState {
+export interface WatchlistState extends PersistPartial {
   watchlist: Movie[];
-}
-
-export interface CompletedConnectionsState {
-  completedConnections: CompletedConnection[];
 }
 
 export interface AddToWatchlistAction {
   type: typeof ADD_TO_WATCHLIST;
   payload: Movie;
-  [key: string]: any;  // Add index signature
 }
 
 export interface RemoveFromWatchlistAction {
   type: typeof REMOVE_FROM_WATCHLIST;
   payload: number; // Assume we use the movie's ID to remove it
-  [key: string]: any;  // Add index signature
 }
 
 export type WatchlistActionTypes = AddToWatchlistAction | RemoveFromWatchlistAction;
@@ -61,41 +55,22 @@ export interface CompletedConnection {
   moves: number;
 }
 
-
+export interface CompletedConnectionsState extends PersistPartial {
+  completedConnections: CompletedConnection[];
+}
 
 export interface AddCompletedConnectionAction {
   type: typeof ADD_COMPLETED_CONNECTION;
   payload: CompletedConnection;
-  [key: string]: any;  // Add index signature
 }
 
 export type CompletedConnectionsActionTypes = AddCompletedConnectionAction;
 
-// Specific rehydrate actions for redux-persist
-import { REHYDRATE } from 'redux-persist/es/constants';
-
-export type WatchlistRehydrateAction = {
-  type: typeof REHYDRATE;
-  payload?: (WatchlistState & PersistPartial) | undefined;
-  [key: string]: any;  // Add index signature
-};
-
-
-export type CompletedConnectionsRehydrateAction = {
-  type: typeof REHYDRATE;
-  payload?: (CompletedConnectionsState & PersistPartial) | undefined;
-  [key: string]: any;  // Add index signature
-};
-
 // Combine all action types into a single type
-export type CombinedActions = 
-  | WatchlistActionTypes 
-  | CompletedConnectionsActionTypes 
-  | WatchlistRehydrateAction 
-  | CompletedConnectionsRehydrateAction;
+export type AppActions = WatchlistActionTypes | CompletedConnectionsActionTypes;
 
 // Root state type
 export type AppState = {
-  watchlist: WatchlistState & PersistPartial;
-  completedConnections: CompletedConnectionsState & PersistPartial;
+  watchlist: WatchlistState;
+  completedConnections: CompletedConnectionsState;
 };

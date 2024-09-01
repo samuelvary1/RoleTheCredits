@@ -33,8 +33,6 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
               displayName: userCredential.user.displayName || "",
               createdAt: firestore.FieldValue.serverTimestamp(),
               lastLogin: firestore.FieldValue.serverTimestamp(),
-              completedConnections: [],
-              watchlist: [],
             });
           } else {
             await userDocRef.update({
