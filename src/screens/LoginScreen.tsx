@@ -15,16 +15,17 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
+
   const handleLogin = () => {
     auth()
       .signInWithEmailAndPassword(email, password)
       .then(async userCredential => {
         console.log('User signed in!');
         const { uid } = userCredential.user;
-
+  
         // Create or update the user document in Firestore
         const userDocRef = firestore().collection('users').doc(uid);
-
+  
         try {
           const userDoc = await userDocRef.get();
           if (!userDoc.exists) {
@@ -33,16 +34,22 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
               displayName: userCredential.user.displayName || "",
               createdAt: firestore.FieldValue.serverTimestamp(),
               lastLogin: firestore.FieldValue.serverTimestamp(),
+              watchlist: [],  // Initialize with an empty array
+              completedConnections: [],  // Initialize with an empty array
             });
           } else {
+            const data = userDoc.data();
             await userDocRef.update({
               lastLogin: firestore.FieldValue.serverTimestamp(),
+              // Ensure the fields exist if they were missing
+              watchlist: data?.watchlist || [],
+              completedConnections: data?.completedConnections || [],
             });
           }
         } catch (error) {
           console.error('Error creating or updating user document:', error);
         }
-
+  
         navigation.navigate('RandomMovies'); // Navigate to the main app screen after login
       })
       .catch((error: any) => {

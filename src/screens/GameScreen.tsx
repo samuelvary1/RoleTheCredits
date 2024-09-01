@@ -8,7 +8,7 @@ import { TMDB_API_KEY } from '@env';
 import { Actor, Movie, PathNode } from '../types';
 import auth from '@react-native-firebase/auth';
 import { useDispatch } from 'react-redux';
-
+import firestore from '@react-native-firebase/firestore';
 import { useWatchlist } from '../context/WatchlistContext';
 import { useCompletedConnections } from '../context/CompletedConnectionsContext';
 
@@ -137,27 +137,56 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
 
-  const handleAddToWatchlist = (movie: Movie) => {    
-    addToWatchlist(movie);
-    Alert.alert('Success', 'Successfully added to watchlist!');
+  // const handleAddToWatchlist = (movie: Movie) => {
+  //   const user = auth().currentUser;
+  //   if (user) {
+  //     addToWatchlist(movie);
+  //     Alert.alert('Success', 'Successfully added to watchlist!');  
+  //   }
+  // };
+
+  const handleAddToWatchlist = async (movie: Movie) => {
+    const user = auth().currentUser;
+    if (user) {
+      const userDocRef = firestore().collection('users').doc(user.uid);
+      
+      try {
+        await userDocRef.update({
+          watchlist: firestore.FieldValue.arrayUnion(movie),
+        });
+        Alert.alert('Success', 'Successfully added to watchlist!');
+      } catch (error) {
+        console.error('Error adding movie to watchlist:', error);
+        Alert.alert('Error', 'Could not add to watchlist.');
+      }
+    }
   };
 
   // Handle the win condition when a connection is confirmed
-  const handleWin = () => {
+  const handleWin = async () => {
     const user = auth().currentUser;
   
     if (user) {
+      const userDocRef = firestore().collection('users').doc(user.uid);
+      
       const completedConnection = {
         movieA: movieA,
-        movieB: movieB,
+        movieB: currentMovieB,
         moves: path.length - 1, // subtract 1 to not count the starting node
+        timestamp: firestore.FieldValue.serverTimestamp(),
       };
   
-      addCompletedConnection(completedConnection);
+      try {
+        await userDocRef.update({
+          completedConnections: firestore.FieldValue.arrayUnion(completedConnection),
+        });
+        Alert.alert(`Congratulations! You've connected the movies in ${path.length - 1} moves!`);
+        navigation.navigate('RandomMovies'); // Navigate back to the movie selection screen
+      } catch (error) {
+        console.error('Error storing completed connection:', error);
+        Alert.alert('Error', 'Could not save the completed connection.');
+      }
     }
-  
-    Alert.alert(`Congratulations! You've connected the movies in ${path.length - 1} moves!`);
-    navigation.navigate('RandomMovies'); // Navigate back to the movie selection screen
   };
 
   const handleConfirmConnection = () => {

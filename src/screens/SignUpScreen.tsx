@@ -39,6 +39,8 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
             email,
             createdAt: timestamp, // Record the time the user was created
             lastLogin: timestamp, // Record the time the user last logged in (same as created at signup)
+            watchlist: [],  // Initialize with an empty array
+            completedConnections: [],  // Initialize with an empty array
           })
           .then(() => {
             console.log('User document created!');

@@ -1,5 +1,5 @@
 // App.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './src/store';
@@ -18,7 +18,7 @@ import CompletedConnectionsScreen from './src/screens/CompletedConnectionsScreen
 import ChangePasswordScreen from './src/screens/ChangePasswordScreen';
 import WatchlistScreen from './src/screens/WatchlistScreen';
 import { RootStackParamList } from './src/navigation/AppNavigator';
-import { WatchlistProvider } from './src/context/WatchlistContext';
+import { WatchlistProvider, useWatchlist } from './src/context/WatchlistContext';
 import { CompletedConnectionsProvider } from './src/context/CompletedConnectionsContext';
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -27,7 +27,7 @@ const App: React.FC = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <WatchlistProvider>
+        <WatchlistProvider userId={null}>
           <CompletedConnectionsProvider>
             <NavigationContainer>
               <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>

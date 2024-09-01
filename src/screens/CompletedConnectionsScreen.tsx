@@ -1,8 +1,9 @@
-import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Button, SafeAreaView, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView, Image, ActivityIndicator } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
-import { useCompletedConnections } from '../context/CompletedConnectionsContext';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 import { CompletedConnection, Movie } from '../types';
 
 type CompletedConnectionsScreenNavigationProp = StackNavigationProp<
@@ -15,12 +16,47 @@ type Props = {
 };
 
 const CompletedConnectionsScreen: React.FC<Props> = ({ navigation }) => {
-  const { completedConnections, removeCompletedConnection } = useCompletedConnections();
-  const handleDelete = (id: string) => {
-    removeCompletedConnection(id);
+  const [completedConnections, setCompletedConnections] = useState<CompletedConnection[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchCompletedConnections = async () => {
+      const user = auth().currentUser;
+      if (user) {
+        try {
+          const userDoc = await firestore().collection('users').doc(user.uid).get();
+          if (userDoc.exists) {
+            const userData = userDoc.data();
+            setCompletedConnections(userData?.completedConnections || []);
+          }
+        } catch (error) {
+          console.error('Error fetching completed connections:', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchCompletedConnections();
+  }, []);
+
+  const removeCompletedConnection = async (id: string) => {
+    const user = auth().currentUser;
+    if (user) {
+      try {
+        const connectionToRemove = completedConnections.find(conn => conn.id === id);
+        const userDocRef = firestore().collection('users').doc(user.uid);
+        await userDocRef.update({
+          completedConnections: firestore.FieldValue.arrayRemove(connectionToRemove),
+        });
+        setCompletedConnections(completedConnections.filter(conn => conn.id !== id));
+      } catch (error) {
+        console.error('Error removing completed connection:', error);
+      }
+    }
   };
 
-  const renderItem = ({ item, index }: { item: { id: string; movieA: Movie; movieB: Movie; moves: number }, index: number }) => (
+  const renderItem = ({ item }: { item: CompletedConnection }) => (
     <View style={styles.itemContainer}>
       <View style={styles.posterContainer}>
         <Image
@@ -48,7 +84,7 @@ const CompletedConnectionsScreen: React.FC<Props> = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.deleteButton}
-          onPress={() => handleDelete(item.id)}
+          onPress={() => removeCompletedConnection(item.id)}
         >
           <Text style={styles.buttonText}>Delete</Text>
         </TouchableOpacity>
@@ -56,13 +92,17 @@ const CompletedConnectionsScreen: React.FC<Props> = ({ navigation }) => {
     </View>
   );
 
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Completed Connections</Text>
       <FlatList
         data={completedConnections}
         renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item) => item.id}
         ListEmptyComponent={<Text style={styles.emptyMessage}>No completed connections yet.</Text>}
         contentContainerStyle={styles.flatListContent}
       />

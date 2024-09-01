@@ -1,19 +1,55 @@
-import React from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
-import { useWatchlist } from '../context/WatchlistContext'; // Import the custom hook
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 import { Movie } from '../types';
-import { Icon } from 'react-native-elements'; // Import Icon from react-native-elements
+import { Icon } from 'react-native-elements';
 
-type WatchlistScreenNavigationProp = StackNavigationProp<RootStackParamList, 'WatchlistScreen'>;
-
-type Props = {
-  navigation: WatchlistScreenNavigationProp;
-};
+type Props = StackScreenProps<RootStackParamList, 'WatchlistScreen'>;
 
 const WatchlistScreen: React.FC<Props> = ({ navigation }) => {
-  const { watchlist, removeFromWatchlist } = useWatchlist(); // Use the custom hook
+  const [watchlist, setWatchlist] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchWatchlist = async () => {
+      const user = auth().currentUser;
+      if (user) {
+        try {
+          const userDoc = await firestore().collection('users').doc(user.uid).get();
+          if (userDoc.exists) {
+            const userData = userDoc.data();
+            setWatchlist(userData?.watchlist || []);
+          }
+        } catch (error) {
+          console.error('Error fetching watchlist:', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchWatchlist();
+  }, []);
+
+  const removeFromWatchlist = async (movieId: number) => {
+    const user = auth().currentUser;
+    if (user) {
+      try {
+        const userDocRef = firestore().collection('users').doc(user.uid);
+        await userDocRef.update({
+          watchlist: firestore.FieldValue.arrayRemove(
+            watchlist.find(movie => movie.id === movieId)
+          ),
+        });
+        setWatchlist(watchlist.filter(movie => movie.id !== movieId));
+      } catch (error) {
+        console.error('Error removing movie from watchlist:', error);
+      }
+    }
+  };
 
   const renderItem = ({ item }: { item: Movie }) => (
     <View style={styles.itemContainer}>
@@ -34,6 +70,10 @@ const WatchlistScreen: React.FC<Props> = ({ navigation }) => {
       </View>
     </View>
   );
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
 
   return (
     <View style={styles.container}>
@@ -58,7 +98,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    paddingTop: 60, // Adjust padding to move content down
+    paddingTop: 60,
   },
   title: {
     fontSize: 24,
