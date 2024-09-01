@@ -138,7 +138,7 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const handleAddToWatchlist = (movie: Movie) => {    
     addToWatchlist(movie);
-    Alert.alert('Success', 'Successfully added to watchlist');
+    Alert.alert('Success', 'Successfully added to watchlist!');
   };
 
   // Handle the win condition when a connection is confirmed

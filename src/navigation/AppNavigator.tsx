@@ -52,13 +52,8 @@ export type RootStackParamList = {
     moves: number;
   };
   AccountOverviewScreen: undefined;
-  WatchlistScreen: {
-    watchlist: { id: number; title: string }[];
-    removeFromWatchlist: (movieId: number) => void;
-  };
-  CompletedConnectionsScreen: {
-    completedConnections: { movieA: Movie; movieB: Movie; moves: number }[];
-  };
+  WatchlistScreen: undefined;
+  CompletedConnectionsScreen: undefined;
   ChangePasswordScreen: undefined; // Add ChangePasswordScreen to the stack
 };
 

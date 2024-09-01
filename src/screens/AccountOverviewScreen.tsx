@@ -37,47 +37,52 @@ const AccountOverviewScreen: React.FC<Props> = ({ navigation }) => {
     fetchUserData();
   }, []);
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Account Overview</Text>
+return (
+  <View style={styles.container}>
+    <Text style={styles.title}>Account Overview</Text>
 
-      {/* User Info */}
-      <Text style={styles.userInfo}>{`${userData.firstName} ${userData.lastName}`}</Text>
-      <Text style={styles.userInfo}>{userData.email}</Text>
+    {/* User Info */}
+    <Text style={styles.userInfo}>{`${userData.firstName} ${userData.lastName}`}</Text>
+    <Text style={styles.userInfo}>{userData.email}</Text>
 
-      {/* Button to navigate to Watchlist */}
+    <View style={styles.gridContainer}>
+      {/* Watchlist */}
       <TouchableOpacity 
-        style={styles.button}
-        onPress={() => navigation.navigate('WatchlistScreen', { watchlist: [], removeFromWatchlist: () => {} })}
+        style={[styles.square, styles.pastelBlue]}
+        onPress={() => navigation.navigate('WatchlistScreen')}
       >
-        <Text style={styles.buttonText}>View Watchlist</Text>
+        <Text style={styles.squareText}>View Watchlist</Text>
       </TouchableOpacity>
-      
-      {/* Button to navigate to Completed Connections */}
+
+      {/* Completed Connections */}
       <TouchableOpacity 
-        style={styles.button}
-        onPress={() => navigation.navigate('CompletedConnectionsScreen', { completedConnections: [] })}
+        style={[styles.square, styles.pastelGreen]}
+        onPress={() => navigation.navigate('CompletedConnectionsScreen')}
       >
-        <Text style={styles.buttonText}>View Completed Connections</Text>
+        <Text style={styles.squareText}>View Completed Connections</Text>
       </TouchableOpacity>
-            
-      {/* Button to navigate back to RandomMovies */}
+
+      {/* Back to Movies */}
       <TouchableOpacity 
-        style={styles.button}
+        style={[styles.square, styles.pastelPink]}
         onPress={() => navigation.navigate('RandomMovies')}
       >
-        <Text style={styles.buttonText}>Back to Movies</Text>
+        <Text style={styles.squareText}>Back to Movies</Text>
       </TouchableOpacity>
 
-      {/* Button to navigate to Login */}
+      {/* Log Out */}
       <TouchableOpacity 
-        style={styles.button}
-        onPress={() => navigation.navigate('Login')}
+        style={[styles.square, styles.pastelYellow]}
+        onPress={() => {
+          auth().signOut();
+          navigation.navigate('Login');
+        }}
       >
-        <Text style={styles.buttonText}>Log Out</Text>
+        <Text style={styles.squareText}>Log Out</Text>
       </TouchableOpacity>
     </View>
-  );
+  </View>
+);
 };
 
 const styles = StyleSheet.create({
@@ -110,6 +115,36 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  square: {
+    width: '48%',
+    aspectRatio: 1, // Keeps the squares square-shaped
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  squareText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  pastelBlue: {
+    backgroundColor: '#A7C7E7',
+  },
+  pastelGreen: {
+    backgroundColor: '#B5EAD7',
+  },
+  pastelPink: {
+    backgroundColor: '#FFC3D8',
+  },
+  pastelYellow: {
+    backgroundColor: '#FFEDB3',
   },
 });
 
