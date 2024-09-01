@@ -1,11 +1,11 @@
 // WatchlistContext.tsx
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { Movie } from '../types';
+import { WatchlistItem } from '../types';
 import auth from '@react-native-firebase/auth';
 
 type WatchlistContextType = {
-  watchlist: Movie[];
-  addToWatchlist: (movie: Movie) => void;
+  watchlist: WatchlistItem[];
+  addToWatchlist: (movie: WatchlistItem) => void;
   removeFromWatchlist: (movieId: number) => void;
   setWatchlistForUser: (userId: string) => void;
 };
@@ -13,7 +13,7 @@ type WatchlistContextType = {
 const WatchlistContext = createContext<WatchlistContextType | undefined>(undefined);
 
 export const WatchlistProvider: React.FC<{ children: ReactNode; userId: string | null }> = ({ children, userId }) => {
-  const [watchlists, setWatchlists] = useState<{ [userId: string]: Movie[] }>({});
+  const [watchlists, setWatchlists] = useState<{ [userId: string]: WatchlistItem[] }>({});
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   
@@ -30,7 +30,7 @@ export const WatchlistProvider: React.FC<{ children: ReactNode; userId: string |
     setCurrentUserId(userId);
   };
 
-  const addToWatchlist = (movie: Movie) => {
+  const addToWatchlist = (movie: WatchlistItem) => {
     if (currentUserId) {
       setWatchlists((prevWatchlists) => ({
         ...prevWatchlists,

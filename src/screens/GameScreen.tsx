@@ -5,7 +5,7 @@ import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import axios from 'axios';
 import { TMDB_API_KEY } from '@env';
-import { Actor, Movie, PathNode } from '../types';
+import { Actor, Movie, PathNode, WatchlistItem } from '../types';
 import auth from '@react-native-firebase/auth';
 import { useDispatch } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
@@ -145,7 +145,7 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
   //   }
   // };
 
-  const handleAddToWatchlist = async (movie: Movie) => {
+  const handleAddToWatchlist = async (movie: WatchlistItem) => {
     const user = auth().currentUser;
     if (user) {
       const userDocRef = firestore().collection('users').doc(user.uid);
@@ -167,14 +167,15 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
     const user = auth().currentUser;
   
     if (user) {
-      const userDocRef = firestore().collection('users').doc(user.uid);
-      
       const completedConnection = {
+        id: firestore().collection('users').doc().id, // Generate a unique ID for the connection
         movieA: movieA,
         movieB: currentMovieB,
-        moves: path.length - 1, // subtract 1 to not count the starting node
-        timestamp: firestore.FieldValue.serverTimestamp(),
+        moves: path.length - 1, // Subtract 1 to not count the starting node
+        timestamp: new Date(), // Use JavaScript's Date object to add the timestamp
       };
+  
+      const userDocRef = firestore().collection('users').doc(user.uid);
   
       try {
         await userDocRef.update({

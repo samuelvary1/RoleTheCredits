@@ -17,6 +17,12 @@ export type Movie = {
   type: 'movie'; // Ensure the type is always 'movie'
 };
 
+export type WatchlistItem = {
+  id: number;
+  title: string;
+  posterPath: string;
+}
+
 // Type for PathNode in the game
 export type PathNode = {
   id: number;
@@ -31,7 +37,7 @@ export const ADD_TO_WATCHLIST = 'ADD_TO_WATCHLIST';
 export const REMOVE_FROM_WATCHLIST = 'REMOVE_FROM_WATCHLIST';
 
 export interface WatchlistState {
-  watchlist: Movie[];
+  watchlist: WatchlistItem[];
 }
 
 export interface CompletedConnectionsState {
