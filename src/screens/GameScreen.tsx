@@ -9,8 +9,8 @@ import { Actor, Movie, PathNode } from '../types';
 import auth from '@react-native-firebase/auth';
 import { useDispatch } from 'react-redux';
 
-import { addCompletedConnection } from '../actions/CompletedConnectionsActions';
 import { useWatchlist } from '../context/WatchlistContext';
+import { useCompletedConnections } from '../context/CompletedConnectionsContext';
 
 
 type GameScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GameScreen'>;
@@ -22,7 +22,8 @@ type Props = {
 };
 
 const GameScreen: React.FC<Props> = ({ navigation, route }) => {
-  const { watchlist, addToWatchlist, removeFromWatchlist } = useWatchlist();  
+  const { addToWatchlist } = useWatchlist();  
+  const { addCompletedConnection } = useCompletedConnections();
   const dispatch = useDispatch();
 
   const {
@@ -147,8 +148,8 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
   
     if (user) {
       const completedConnection = {
-        movieA: currentMovieA,
-        movieB: currentMovieB,
+        movieA: movieA,
+        movieB: movieB,
         moves: path.length - 1, // subtract 1 to not count the starting node
       };
   

@@ -9,7 +9,7 @@ export interface AddCompletedConnectionAction {
 
 export type CompletedConnectionsActionTypes = AddCompletedConnectionAction;
 
-export const addCompletedConnection = (connection: CompletedConnection): CompletedConnectionsActionTypes => ({
-  type: ADD_COMPLETED_CONNECTION,
-  payload: connection,
-});
+// export const addCompletedConnection = (connection: CompletedConnection): CompletedConnectionsActionTypes => ({
+//   type: ADD_COMPLETED_CONNECTION,
+//   payload: connection,
+// });
