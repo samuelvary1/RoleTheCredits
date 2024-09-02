@@ -99,9 +99,10 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   title: {
-    fontSize: 24,
+    fontSize: 36,
     fontWeight: 'bold',
     marginBottom: 20,
+    fontFamily: 'Olde English'
   },
   button: {
     backgroundColor: '#007BFF',

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView, Image, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, SafeAreaView, Image, ActivityIndicator, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import firestore from '@react-native-firebase/firestore';
@@ -40,6 +40,21 @@ const CompletedConnectionsScreen: React.FC<Props> = ({ navigation }) => {
 
     fetchCompletedConnections();
   }, []);
+
+  const confirmDelete = (id: string) => {
+    Alert.alert(
+      "Confirm Deletion",
+      "Are you sure you want to delete this connection?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        { text: "OK", onPress: () => removeCompletedConnection(id) }
+      ],
+      { cancelable: true }
+    );
+  };
 
   const removeCompletedConnection = async (id: string) => {
     const user = auth().currentUser;
@@ -91,7 +106,7 @@ const CompletedConnectionsScreen: React.FC<Props> = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.deleteButton}
-          onPress={() => removeCompletedConnection(item.id)}
+          onPress={() => confirmDelete(item.id)}
         >
           <Icon
             name="trash"
@@ -139,10 +154,11 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 36,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
+    fontFamily: 'Olde English'
   },
   posterContainer: {
     flexDirection: 'row',
@@ -164,6 +180,14 @@ const styles = StyleSheet.create({
   itemContainer: {
     marginBottom: 20,
     alignItems: 'center',
+    backgroundColor: '#f5f5dc', // Creamy off-white background color
+    padding: 15,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2, // For Android shadow
   },
   movieTitle: {
     fontSize: 18,
