@@ -118,12 +118,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#B3E5FC', // Baby blue background
   },
   title: {
-    fontSize: 36,
+    fontSize: 59,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 30,
     color: '#4E342E', // Darker color for the title
-    fontFamily: 'OldeEnglish', // Custom font family
+    fontFamily: 'Olde English', // Custom font family
   },
   input: {
     height: 48,
