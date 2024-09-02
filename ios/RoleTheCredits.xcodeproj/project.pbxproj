@@ -11,6 +11,7 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		291E709D2C85746100893AAB /* OldeEnglish.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 291E709A2C85689E00893AAB /* OldeEnglish.ttf */; };
 		296D36552C80D70F00FC30DD /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 296D36542C80D70F00FC30DD /* GoogleService-Info.plist */; };
 		531A713E223DBED021827D96 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 74A08C7724C081C1E0BE969A /* PrivacyInfo.xcprivacy */; };
 		6D08FB22EF2EAA2A1BC804AD /* Pods_RoleTheCredits.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 837041EAB005D07507056CA4 /* Pods_RoleTheCredits.framework */; };
@@ -42,6 +43,7 @@
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = RoleTheCredits/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		290A811F2C8113E100A0ACE5 /* FontAwesome.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		291E709A2C85689E00893AAB /* OldeEnglish.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = OldeEnglish.ttf; path = ../assets/fonts/OldeEnglish.ttf; sourceTree = "<group>"; };
+		291E709F2C8574DB00893AAB /* OldeEnglish.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = OldeEnglish.ttf; path = ../assets/fonts/OldeEnglish.ttf; sourceTree = "<group>"; };
 		292E92E72C8368B6003B70DA /* libFirebaseCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFirebaseCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		292E92E92C8368D4003B70DA /* libFirebaseFirestore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFirebaseFirestore.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		292E92EB2C8368F5003B70DA /* libFirebaseAuth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFirebaseAuth.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -152,6 +154,7 @@
 			isa = PBXGroup;
 			children = (
 				291E709A2C85689E00893AAB /* OldeEnglish.ttf */,
+				291E709F2C8574DB00893AAB /* OldeEnglish.ttf */,
 				290A811F2C8113E100A0ACE5 /* FontAwesome.ttf */,
 				13B07FAE1A68108700A75B9A /* RoleTheCredits */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -280,6 +283,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				291E709D2C85746100893AAB /* OldeEnglish.ttf in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				296D36552C80D70F00FC30DD /* GoogleService-Info.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
