@@ -129,7 +129,7 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.buttonText}>Start Game with this Pair</Text>
         </TouchableOpacity>
         {!auth().currentUser && (
-          <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('Login')}>
+          <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('Login', { resetFields: true })}>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
         )}

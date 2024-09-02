@@ -1,20 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
+type LoginScreenRouteProp = RouteProp<RootStackParamList, 'Login'>;
 
 type Props = {
   navigation: LoginScreenNavigationProp;
+  route: LoginScreenRouteProp;
 };
 
-const LoginScreen: React.FC<Props> = ({ navigation }) => {
+const LoginScreen: React.FC<Props> = ({ navigation, route }) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+
+  // Reset fields if resetFields is passed in route.params
+  useEffect(() => {
+    if (route.params?.resetFields) {
+      setEmail('');
+      setPassword('');
+    }
+  }, [route.params?.resetFields]);
 
   const handleLogin = () => {
     auth()
@@ -22,9 +33,9 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       .then(async userCredential => {
         console.log('User signed in!');
         const { uid } = userCredential.user;
-  
+
         const userDocRef = firestore().collection('users').doc(uid);
-  
+
         try {
           const userDoc = await userDocRef.get();
           if (!userDoc.exists) {
@@ -47,7 +58,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         } catch (error) {
           console.error('Error creating or updating user document:', error);
         }
-  
+
         navigation.navigate('RandomMovies'); // Navigate to the main app screen after login
       })
       .catch((error: any) => {

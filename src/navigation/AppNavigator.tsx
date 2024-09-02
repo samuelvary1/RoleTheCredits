@@ -15,7 +15,9 @@ import ChangePasswordScreen from '../screens/ChangePasswordScreen'; // Import Ch
 import { Actor, Movie, PathNode } from '../types';
 
 export type RootStackParamList = {
-  Login: undefined;
+  Login: {
+    resetFields: true
+  }
   SignUp: undefined;
   RandomMovies: undefined;
   ActorMoviesScreen: {

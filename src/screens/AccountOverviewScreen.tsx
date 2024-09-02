@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -37,52 +38,54 @@ const AccountOverviewScreen: React.FC<Props> = ({ navigation }) => {
     fetchUserData();
   }, []);
 
-return (
-  <View style={styles.container}>
-    <Text style={styles.title}>Account Overview</Text>
+  const handleLogout = () => {
+    auth().signOut();
+    navigation.navigate('Login', { resetFields: true });  // Pass resetFields via route.params
+  };
 
-    {/* User Info */}
-    <Text style={styles.userInfo}>{`${userData.firstName} ${userData.lastName}`}</Text>
-    <Text style={styles.userInfo}>{userData.email}</Text>
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Account Overview</Text>
 
-    <View style={styles.gridContainer}>
-      {/* Watchlist */}
-      <TouchableOpacity 
-        style={[styles.square, styles.pastelBlue]}
-        onPress={() => navigation.navigate('WatchlistScreen')}
-      >
-        <Text style={styles.squareText}>View Watchlist</Text>
-      </TouchableOpacity>
+      {/* User Info */}
+      <Text style={styles.userInfo}>{`${userData.firstName} ${userData.lastName}`}</Text>
+      <Text style={styles.userInfo}>{userData.email}</Text>
 
-      {/* Completed Connections */}
-      <TouchableOpacity 
-        style={[styles.square, styles.pastelGreen]}
-        onPress={() => navigation.navigate('CompletedConnectionsScreen')}
-      >
-        <Text style={styles.squareText}>View Completed Connections</Text>
-      </TouchableOpacity>
+      <View style={styles.gridContainer}>
+        {/* Watchlist */}
+        <TouchableOpacity 
+          style={[styles.square, styles.pastelBlue]}
+          onPress={() => navigation.navigate('WatchlistScreen')}
+        >
+          <Text style={styles.squareText}>View Watchlist</Text>
+        </TouchableOpacity>
 
-      {/* Back to Movies */}
-      <TouchableOpacity 
-        style={[styles.square, styles.pastelPink]}
-        onPress={() => navigation.navigate('RandomMovies')}
-      >
-        <Text style={styles.squareText}>Back to Movies</Text>
-      </TouchableOpacity>
+        {/* Completed Connections */}
+        <TouchableOpacity 
+          style={[styles.square, styles.pastelGreen]}
+          onPress={() => navigation.navigate('CompletedConnectionsScreen')}
+        >
+          <Text style={styles.squareText}>View Completed Connections</Text>
+        </TouchableOpacity>
 
-      {/* Log Out */}
-      <TouchableOpacity 
-        style={[styles.square, styles.pastelYellow]}
-        onPress={() => {
-          auth().signOut();
-          navigation.navigate('Login');
-        }}
-      >
-        <Text style={styles.squareText}>Log Out</Text>
-      </TouchableOpacity>
+        {/* Back to Movies */}
+        <TouchableOpacity 
+          style={[styles.square, styles.pastelPink]}
+          onPress={() => navigation.navigate('RandomMovies')}
+        >
+          <Text style={styles.squareText}>Back to Movies</Text>
+        </TouchableOpacity>
+
+        {/* Log Out */}
+        <TouchableOpacity 
+          style={[styles.square, styles.pastelYellow]}
+          onPress={handleLogout}
+        >
+          <Text style={styles.squareText}>Log Out</Text>
+        </TouchableOpacity>
+      </View>
     </View>
-  </View>
-);
+  );
 };
 
 const styles = StyleSheet.create({
@@ -103,19 +106,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     fontFamily: 'Olde English'
-  },
-  button: {
-    backgroundColor: '#007BFF',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    marginVertical: 10,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
   },
   gridContainer: {
     flexDirection: 'row',
