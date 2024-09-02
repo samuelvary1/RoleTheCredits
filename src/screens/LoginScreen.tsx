@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -15,17 +15,16 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
-
   const handleLogin = () => {
     auth()
       .signInWithEmailAndPassword(email, password)
       .then(async userCredential => {
         console.log('User signed in!');
         const { uid } = userCredential.user;
-  
+
         // Create or update the user document in Firestore
         const userDocRef = firestore().collection('users').doc(uid);
-  
+
         try {
           const userDoc = await userDocRef.get();
           if (!userDoc.exists) {
@@ -41,7 +40,6 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             const data = userDoc.data();
             await userDocRef.update({
               lastLogin: firestore.FieldValue.serverTimestamp(),
-              // Ensure the fields exist if they were missing
               watchlist: data?.watchlist || [],
               completedConnections: data?.completedConnections || [],
             });
@@ -49,7 +47,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         } catch (error) {
           console.error('Error creating or updating user document:', error);
         }
-  
+
         navigation.navigate('RandomMovies'); // Navigate to the main app screen after login
       })
       .catch((error: any) => {
@@ -95,13 +93,18 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         style={styles.input}
       />
       <View style={styles.buttonContainer}>
-        <Button title="Login" onPress={handleLogin} />
-        <Button
-          title="Register"
+        <TouchableOpacity style={[styles.button, styles.loginButton]} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, styles.registerButton]}
           onPress={() => navigation.navigate('SignUp')}
-          color="#841584"
-        />
-        <Button title="Play as Guest" onPress={handleGuestPlay} />
+        >
+          <Text style={styles.buttonText}>Register</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.button, styles.guestButton]} onPress={handleGuestPlay}>
+          <Text style={styles.buttonText}>Play as Guest</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -112,25 +115,48 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#B3E5FC', // Baby blue background
   },
   title: {
-    fontSize: 24,
+    fontSize: 36,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 30,
+    color: '#4E342E', // Darker color for the title
+    fontFamily: 'OldeEnglish', // Custom font family
   },
   input: {
-    height: 40,
-    borderColor: 'gray',
+    height: 48,
+    borderColor: '#B0BEC5', // Light grey border
     borderWidth: 1,
-    marginBottom: 12,
+    marginBottom: 20,
     paddingHorizontal: 10,
-    borderRadius: 5,
-    backgroundColor: '#fff',
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF', // White background for input fields
   },
   buttonContainer: {
     marginTop: 20,
+  },
+  button: {
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    marginBottom: 15,
+  },
+  loginButton: {
+    backgroundColor: '#FFCCBC', // Pastel orange
+  },
+  registerButton: {
+    backgroundColor: '#CE93D8', // Pastel purple
+  },
+  guestButton: {
+    backgroundColor: '#90CAF9', // Pastel blue
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
