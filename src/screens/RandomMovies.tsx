@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, StyleSheet, Image, TouchableOpacity, Alert } from 'react-native';
 import axios from 'axios';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { Movie } from '../types';
 import { TMDB_API_KEY } from '@env';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 type RandomMoviesNavigationProp = StackNavigationProp<RootStackParamList, 'RandomMovies'>;
 
@@ -71,11 +72,27 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('AccountOverviewScreen');
   };
 
+  const addToWatchlist = async (movie: Movie) => {
+    const user = auth().currentUser;
+    if (user) {
+      try {
+        const userDocRef = firestore().collection('users').doc(user.uid);
+        await userDocRef.update({
+          watchlist: firestore.FieldValue.arrayUnion(movie),
+        });
+        Alert.alert('Success', 'Successfully added movie to watchlist!');
+      } catch (error) {
+        console.error('Error adding movie to watchlist:', error);
+        Alert.alert('Error', 'Failed to add movie to watchlist.');
+      }
+    } else {
+      Alert.alert('Not Logged In', 'You need to be logged in to add movies to your watchlist.');
+    }
+  };
+
   useEffect(() => {
     loadMovies();
   }, []);
-
-  const user = auth().currentUser;
 
   return (
     <View style={styles.container}>
@@ -87,10 +104,12 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
             {movies.map((movie, index) => (
               <View key={index} style={styles.movieContainer}>
                 <Text style={styles.movieLabel}>{index === 0 ? 'Movie A' : 'Movie B'}</Text>
-                <Image
-                  source={{ uri: `https://image.tmdb.org/t/p/w500${movie.posterPath}` }}
-                  style={styles.poster}
-                />
+                <TouchableOpacity onPress={() => addToWatchlist(movie)}>
+                  <Image
+                    source={{ uri: `https://image.tmdb.org/t/p/w500${movie.posterPath}` }}
+                    style={styles.poster}
+                  />
+                </TouchableOpacity>
                 <Text style={styles.title}>{movie.title}</Text>
                 <Text style={styles.subtitle}>Top 10 Actors:</Text>
                 {movie.actors.map(actor => (
@@ -109,12 +128,12 @@ const RandomMovies: React.FC<Props> = ({ navigation }) => {
         <TouchableOpacity style={styles.startGameButton} onPress={handleViewPairDetails}>
           <Text style={styles.buttonText}>Start Game with this Pair</Text>
         </TouchableOpacity>
-        {!user && (
+        {!auth().currentUser && (
           <TouchableOpacity style={styles.loginButton} onPress={() => navigation.navigate('Login')}>
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
         )}
-        {user && (
+        {auth().currentUser && (
           <TouchableOpacity style={styles.accountButton} onPress={handleAccountNavigation}>
             <Text style={styles.buttonText}>Account</Text>
           </TouchableOpacity>
@@ -145,29 +164,29 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   movieLabel: {
-    fontSize: 16, // Increased font size
+    fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 5,
   },
   poster: {
-    width: 120, // Adjusted size for larger layout
-    height: 180, // Adjusted size for larger layout
+    width: 120,
+    height: 180,
     marginBottom: 10,
   },
   title: {
-    fontSize: 16, // Increased font size
+    fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 8, // Adjusted margin for spacing
+    marginBottom: 8,
   },
   subtitle: {
-    fontSize: 14, // Increased font size
+    fontSize: 14,
     marginBottom: 5,
     textAlign: 'center',
   },
   actor: {
-    fontSize: 14, // Increased font size
-    marginVertical: 2, // Slightly adjusted margin for better spacing
+    fontSize: 14,
+    marginVertical: 2,
     textAlign: 'center',
   },
   buttonsContainer: {
