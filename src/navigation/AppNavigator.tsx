@@ -16,7 +16,7 @@ import { Actor, Movie, PathNode } from '../types';
 
 export type RootStackParamList = {
   Login: {
-    resetFields: true
+    resetFields: true;
   }
   SignUp: undefined;
   RandomMovies: undefined;
