@@ -130,7 +130,7 @@ const CompletedConnectionsScreen: React.FC<Props> = ({ navigation }) => {
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         ListEmptyComponent={<Text style={styles.emptyMessage}>No completed connections yet.</Text>}
-        contentContainerStyle={styles.flatListContent}
+        contentContainerStyle={completedConnections.length === 0 ? styles.flatListEmpty : styles.flatListContent}
       />
       <TouchableOpacity
         style={styles.backButton}
@@ -153,12 +153,15 @@ const styles = StyleSheet.create({
   flatListContent: {
     paddingBottom: 20,
   },
+  flatListEmpty: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
   title: {
-    fontSize: 36,
+    fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-    fontFamily: 'Olde English'
   },
   posterContainer: {
     flexDirection: 'row',
