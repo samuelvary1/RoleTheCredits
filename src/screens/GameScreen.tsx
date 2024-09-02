@@ -137,14 +137,6 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
 
-  // const handleAddToWatchlist = (movie: Movie) => {
-  //   const user = auth().currentUser;
-  //   if (user) {
-  //     addToWatchlist(movie);
-  //     Alert.alert('Success', 'Successfully added to watchlist!');  
-  //   }
-  // };
-
   const handleAddToWatchlist = async (movie: WatchlistItem) => {
     const user = auth().currentUser;
     if (user) {
@@ -159,6 +151,8 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
         console.error('Error adding movie to watchlist:', error);
         Alert.alert('Error', 'Could not add to watchlist.');
       }
+    }  else {
+      Alert.alert('Not Logged In', 'You need to be logged in to add movies to your watchlist.');
     }
   };
 
@@ -340,6 +334,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+    textAlign: 'center', // Center the movie title above the poster
   },
   poster: {
     width: '100%',
@@ -351,16 +346,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 5,
+    textAlign: 'center', // Center the "Top 10 Actors" or "Movies" text
   },
   subtitle: {
     fontSize: 14,
     marginBottom: 10,
+    textAlign: 'center', // Center the subtitle text
   },
   actorContainer: {
     marginBottom: 10,
   },
   actorName: {
     fontSize: 14,
+    textAlign: 'center', // Center the actor's name
   },
   confirmButton: {
     backgroundColor: '#007BFF',
