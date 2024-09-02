@@ -5,7 +5,7 @@ import { RootStackParamList } from '../navigation/AppNavigator';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { Movie } from '../types';
-import { Icon } from 'react-native-elements';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 type Props = StackScreenProps<RootStackParamList, 'WatchlistScreen'>;
 
@@ -61,10 +61,9 @@ const WatchlistScreen: React.FC<Props> = ({ navigation }) => {
           style={styles.deleteIconContainer}
         >
           <Icon
-            name="delete"
-            type="material"
-            color="#FF6347"
+            name="trash"
             size={24}
+            color="#FF6347"
           />
         </TouchableOpacity>
       </View>

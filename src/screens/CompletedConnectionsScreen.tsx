@@ -4,7 +4,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import { CompletedConnection, Movie } from '../types';
+import { CompletedConnection } from '../types';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 type CompletedConnectionsScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -60,11 +61,17 @@ const CompletedConnectionsScreen: React.FC<Props> = ({ navigation }) => {
     <View style={styles.itemContainer}>
       <View style={styles.posterContainer}>
         <Image
-          source={{ uri: item.movieA.posterPath }}
+          source={{ uri: `https://image.tmdb.org/t/p/w200${item.movieA.posterPath}` }}
           style={styles.posterImage}
         />
+        <Icon
+          name="arrow-right"
+          size={24}
+          color="#000"
+          style={styles.arrowIcon}
+        />
         <Image
-          source={{ uri: item.movieB.posterPath }}
+          source={{ uri: `https://image.tmdb.org/t/p/w200${item.movieB.posterPath}` }}
           style={styles.posterImage}
         />
       </View>
@@ -86,7 +93,11 @@ const CompletedConnectionsScreen: React.FC<Props> = ({ navigation }) => {
           style={styles.deleteButton}
           onPress={() => removeCompletedConnection(item.id)}
         >
-          <Text style={styles.buttonText}>Delete</Text>
+          <Icon
+            name="trash"
+            size={24}
+            color="#FFFFFF"
+          />
         </TouchableOpacity>
       </View>
     </View>
@@ -133,14 +144,22 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
+  posterContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
   posterImage: {
     width: 50,
     height: 75,
     borderRadius: 5,
-    marginRight: 10,
+    marginHorizontal: 5,
+  },
+  arrowIcon: {
+    marginHorizontal: 10,
   },
   textContainer: {
-    flex: 1,
+    alignItems: 'center',
   },
   itemContainer: {
     marginBottom: 20,
@@ -157,10 +176,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'center',
   },
-  posterContainer: {
-    flexDirection: 'row',
-    marginRight: 15,
-  },
   tryAgainButton: {
     backgroundColor: '#4CAF50',
     paddingVertical: 10,
@@ -173,6 +188,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  deleteButton: {
+    backgroundColor: '#FF4136',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginTop: 10,
   },
   emptyMessage: {
     fontSize: 16,
@@ -194,13 +216,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  deleteButton: {
-    backgroundColor: '#FF4136',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    marginTop: 10,
-  }
 });
 
 export default CompletedConnectionsScreen;
