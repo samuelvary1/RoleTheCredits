@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
@@ -21,10 +22,9 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       .then(async userCredential => {
         console.log('User signed in!');
         const { uid } = userCredential.user;
-
-        // Create or update the user document in Firestore
+  
         const userDocRef = firestore().collection('users').doc(uid);
-
+  
         try {
           const userDoc = await userDocRef.get();
           if (!userDoc.exists) {
@@ -47,7 +47,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         } catch (error) {
           console.error('Error creating or updating user document:', error);
         }
-
+  
         navigation.navigate('RandomMovies'); // Navigate to the main app screen after login
       })
       .catch((error: any) => {
@@ -77,6 +77,12 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Role the Credits</Text>
+      <Icon
+        name="film"
+        size={100}
+        color="#4E342E"
+        style={styles.icon}
+      />
       <TextInput
         placeholder="Email"
         value={email}
@@ -93,16 +99,16 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         style={styles.input}
       />
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={[styles.button, styles.loginButton]} onPress={handleLogin}>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.button, styles.registerButton]}
+          style={styles.registerButton}
           onPress={() => navigation.navigate('SignUp')}
         >
           <Text style={styles.buttonText}>Register</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.guestButton]} onPress={handleGuestPlay}>
+        <TouchableOpacity style={styles.guestButton} onPress={handleGuestPlay}>
           <Text style={styles.buttonText}>Play as Guest</Text>
         </TouchableOpacity>
       </View>
@@ -115,48 +121,57 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#B3E5FC', // Baby blue background
+    backgroundColor: '#B3E5FC',
   },
   title: {
-    fontSize: 59,
+    fontSize: 54,
     fontWeight: 'bold',
     textAlign: 'center',
+    marginBottom: 20,
+    color: '#4E342E',
+    fontFamily: 'Olde English',
+  },
+  icon: {
+    alignSelf: 'center',
     marginBottom: 30,
-    color: '#4E342E', // Darker color for the title
-    fontFamily: 'Olde English', // Custom font family
   },
   input: {
-    height: 48,
-    borderColor: '#B0BEC5', // Light grey border
+    height: 40,
+    borderColor: 'gray',
     borderWidth: 1,
-    marginBottom: 20,
+    marginBottom: 12,
     paddingHorizontal: 10,
-    borderRadius: 8,
-    backgroundColor: '#FFFFFF', // White background for input fields
+    borderRadius: 5,
+    backgroundColor: '#fff',
   },
   buttonContainer: {
     marginTop: 20,
   },
-  button: {
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 8,
-    marginBottom: 15,
-  },
   loginButton: {
-    backgroundColor: '#FFCCBC', // Pastel orange
+    backgroundColor: '#4CAF50',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 25,
+    marginBottom: 10,
   },
   registerButton: {
-    backgroundColor: '#CE93D8', // Pastel purple
+    backgroundColor: '#FF6347',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 25,
+    marginBottom: 10,
   },
   guestButton: {
-    backgroundColor: '#90CAF9', // Pastel blue
+    backgroundColor: '#007BFF',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 25,
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

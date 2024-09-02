@@ -82,6 +82,7 @@ const WatchlistScreen: React.FC<Props> = ({ navigation }) => {
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
         ListEmptyComponent={<Text style={styles.emptyMessage}>Your watchlist is empty.</Text>}
+        contentContainerStyle={watchlist.length === 0 ? styles.flatListEmpty : styles.flatListContent}
       />
       <TouchableOpacity
         style={styles.backButton}
@@ -104,6 +105,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
+  },
+  flatListContent: {
+    paddingBottom: 20,
+  },
+  flatListEmpty: {
+    flexGrow: 1,
+    justifyContent: 'center',
   },
   itemContainer: {
     flexDirection: 'row',
