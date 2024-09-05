@@ -164,7 +164,7 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
       const completedConnection = {
         id: firestore().collection('users').doc().id, // Generate a unique ID for the connection
         movieA: movieA,
-        movieB: currentMovieB,
+        movieB: movieB,
         moves: path.length - 1, // Subtract 1 to not count the starting node
         timestamp: new Date(), // Use JavaScript's Date object to add the timestamp
       };
