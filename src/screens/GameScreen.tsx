@@ -13,6 +13,7 @@ import { useWatchlist } from '../context/WatchlistContext';
 import { useCompletedConnections } from '../context/CompletedConnectionsContext';
 import { useSubscriptionStatus } from '../context/SubscriptionProvider'; // Import subscription status hook
 import { requestSubscription } from 'react-native-iap'; // Import to handle purchases
+import SubscriptionModal from '../components/SubscriptionModal'; // Import the SubscriptionModal component
 
 type GameScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GameScreen'>;
 type GameScreenRouteProp = RouteProp<RootStackParamList, 'GameScreen'>;
@@ -32,6 +33,7 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
   const isSubscriber = useSubscriptionStatus(); // Check subscription status
   const [playCount, setPlayCount] = useState<number>(0); // Track play count
   const [lastPlayedDate, setLastPlayedDate] = useState<Date>(new Date());
+  const [modalVisible, setModalVisible] = useState<boolean>(false); // Control modal visibility
 
   const maxPlays = isSubscriber ? 3 : 1; // Subscribers get 3 plays, free users get 1
 
@@ -79,6 +81,7 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
       await requestSubscription({
         sku: subscriptionSku, // Pass the subscription product ID as part of an object
       });
+      setModalVisible(false); // Close the modal after subscribing
       Alert.alert('Subscription initiated');
     } catch (error) {
       console.error('Error purchasing subscription:', error);
@@ -91,15 +94,8 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
       setPlayCount(playCount + 1);
       Alert.alert('You played the game!');
     } else {
-      // Prompt user to subscribe when the play limit is reached
-      Alert.alert(
-        'Play Limit Reached',
-        `You've reached your daily limit of ${maxPlays} plays. Subscribe to get more!`,
-        [
-          { text: 'Subscribe Now', onPress: handlePurchaseSubscription },
-          { text: 'Cancel', style: 'cancel' },
-        ],
-      );
+      // Show the subscription modal when the play limit is reached
+      setModalVisible(true);
     }
   };
 
@@ -362,6 +358,13 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
       <TouchableOpacity style={styles.startOverButton} onPress={handleStartOver}>
         <Text style={styles.startOverButtonText}>Start Over</Text>
       </TouchableOpacity>
+
+      {/* Subscription Modal */}
+      <SubscriptionModal 
+        visible={modalVisible} 
+        onSubscribe={handlePurchaseSubscription} 
+        onClose={() => setModalVisible(false)} 
+      />
     </View>
   );
 };
