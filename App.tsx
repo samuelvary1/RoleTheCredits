@@ -20,6 +20,7 @@ import { RootStackParamList } from './src/navigation/AppNavigator';
 import { WatchlistProvider } from './src/context/WatchlistContext';
 import { CompletedConnectionsProvider } from './src/context/CompletedConnectionsContext';
 import { SubscriptionProvider } from './src/context/SubscriptionProvider';
+import SubscriptionScreen from './src/screens/SubscriptionScreen';
 
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -45,6 +46,7 @@ const App: React.FC = () => {
                   <Stack.Screen name="WatchlistScreen" component={WatchlistScreen} />
                   <Stack.Screen name="CompletedConnectionsScreen" component={CompletedConnectionsScreen} />
                   <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />
+                  <Stack.Screen name="SubscriptionScreen" component={SubscriptionScreen} />
                 </Stack.Navigator>
               </NavigationContainer>
             </SubscriptionProvider>
