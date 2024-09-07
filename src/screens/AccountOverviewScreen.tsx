@@ -42,6 +42,11 @@ const AccountOverviewScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('Login', { resetFields: true });  // Pass resetFields via route.params
   };
 
+  // New function to handle subscription button press
+  const handleSubscriptionPress = () => {
+    navigation.navigate('SubscriptionScreen');  // Replace with your actual subscription screen
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Account Overview</Text>
@@ -82,6 +87,15 @@ const AccountOverviewScreen: React.FC<Props> = ({ navigation }) => {
         >
           <Text style={styles.squareText}>Log Out</Text>
         </TouchableOpacity>
+
+        {/* New Subscription Button */}
+        <TouchableOpacity 
+          style={[styles.square, styles.pastelOrange]}  // You can add a new style for this
+          onPress={handleSubscriptionPress}
+        >
+          <Text style={styles.squareText}>Manage Subscription</Text>
+        </TouchableOpacity>
+
       </View>
     </View>
   );
@@ -135,6 +149,9 @@ const styles = StyleSheet.create({
   },
   pastelYellow: {
     backgroundColor: '#FFEDB3',
+  },
+  pastelOrange: {
+    backgroundColor: '#FFA500',  // Add new style for the subscription button
   },
 });
 

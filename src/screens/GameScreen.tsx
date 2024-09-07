@@ -13,6 +13,7 @@ import { useWatchlist } from '../context/WatchlistContext';
 import { useCompletedConnections } from '../context/CompletedConnectionsContext';
 import { useSubscriptionStatus } from '../context/SubscriptionProvider'; // Import subscription status hook
 import { requestSubscription } from 'react-native-iap'; // Import to handle purchases
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage for guest play count storage
 import SubscriptionModal from '../components/SubscriptionModal'; // Import the SubscriptionModal component
 
 type GameScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GameScreen'>;
@@ -24,6 +25,7 @@ type Props = {
 };
 
 const subscriptionSku = 'role_the_credits_99c_monthly'; // Your subscription product ID
+const guestPlayLimit = 1; // Play limit for guests (1 play per day)
 
 const GameScreen: React.FC<Props> = ({ navigation, route }) => {
   const { addToWatchlist } = useWatchlist();  
@@ -31,11 +33,16 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
   const dispatch = useDispatch();
 
   const isSubscriber = useSubscriptionStatus(); // Check subscription status
+  const user = auth().currentUser; // Get the currently logged-in user
   const [playCount, setPlayCount] = useState<number>(0); // Track play count
   const [lastPlayedDate, setLastPlayedDate] = useState<Date>(new Date());
   const [modalVisible, setModalVisible] = useState<boolean>(false); // Control modal visibility
 
-  const maxPlays = isSubscriber ? 3 : 1; // Subscribers get 3 plays, free users get 1
+  // Bypass paywall if the logged-in user is sam.vary@gmail.com
+  const isSamVary = user?.email === 'sam.vary@gmail.com';
+
+  // Determine max plays: Sam has unlimited, subscribers get 3, regular users get 1, guests get 1
+  const maxPlays = isSamVary ? Infinity : (isSubscriber ? 3 : (user ? 1 : guestPlayLimit));
 
   const {
     movieA = { id: 0, title: 'Unknown Movie A', posterPath: '', actors: [], type: 'movie' },
@@ -59,14 +66,36 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
   const [showConfirmButton, setShowConfirmButton] = useState<boolean>(false);
   const [path, setPath] = useState<PathNode[]>([{ id: movieA.id, title: movieA.title, type: 'movie', side: 'A' }]);
 
-  // Reset play count at the start of each new day
+  // Load guest play data from AsyncStorage
   useEffect(() => {
-    const today = new Date();
-    if (today.toDateString() !== lastPlayedDate.toDateString()) {
-      setPlayCount(0);
-      setLastPlayedDate(today);
+    if (!user) { // Only for guest users
+      const loadGuestPlayData = async () => {
+        const storedPlayCount = await AsyncStorage.getItem('guestPlayCount');
+        const storedLastPlayedDate = await AsyncStorage.getItem('guestLastPlayedDate');
+        const today = new Date();
+        
+        if (storedLastPlayedDate && new Date(storedLastPlayedDate).toDateString() === today.toDateString()) {
+          setPlayCount(parseInt(storedPlayCount || '0', 10)); // Set stored play count for the current day
+        } else {
+          setPlayCount(0); // Reset play count if it's a new day
+        }
+
+        setLastPlayedDate(today);
+      };
+      loadGuestPlayData();
     }
-  }, [lastPlayedDate]);
+  }, [user]);
+
+  // Save guest play data to AsyncStorage
+  useEffect(() => {
+    if (!user) { // Only for guest users
+      const saveGuestPlayData = async () => {
+        await AsyncStorage.setItem('guestPlayCount', playCount.toString());
+        await AsyncStorage.setItem('guestLastPlayedDate', lastPlayedDate.toISOString());
+      };
+      saveGuestPlayData();
+    }
+  }, [playCount, lastPlayedDate, user]);
 
   useEffect(() => {
     const hasCommonActor = selectedActorA && selectedActorB && selectedActorA.id === selectedActorB.id;
@@ -94,8 +123,10 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
       setPlayCount(playCount + 1);
       Alert.alert('You played the game!');
     } else {
-      // Show the subscription modal when the play limit is reached
-      setModalVisible(true);
+      // Show the subscription modal when the play limit is reached, but not for Sam
+      if (!isSamVary) {
+        setModalVisible(true);
+      }
     }
   };
 
