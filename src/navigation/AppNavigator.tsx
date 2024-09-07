@@ -12,12 +12,13 @@ import AccountOverviewScreen from '../screens/AccountOverviewScreen'; // Import 
 import WatchlistScreen from '../screens/WatchlistScreen'; // Import Watchlist Screen
 import CompletedConnectionsScreen from '../screens/CompletedConnectionsScreen'; // Import Completed Connections Screen
 import ChangePasswordScreen from '../screens/ChangePasswordScreen'; // Import Change Password Screen
+import SubscriptionScreen from '../screens/SubscriptionScreen'; // Import Subscription Screen
 import { Actor, Movie, PathNode } from '../types';
 
 export type RootStackParamList = {
   Login: {
     resetFields: true;
-  }
+  };
   SignUp: undefined;
   RandomMovies: undefined;
   ActorMoviesScreen: {
@@ -56,7 +57,8 @@ export type RootStackParamList = {
   AccountOverviewScreen: undefined;
   WatchlistScreen: undefined;
   CompletedConnectionsScreen: undefined;
-  ChangePasswordScreen: undefined; // Add ChangePasswordScreen to the stack
+  ChangePasswordScreen: undefined;
+  SubscriptionScreen: undefined; // Add SubscriptionScreen to the stack
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -76,6 +78,7 @@ const AppNavigator = () => {
       <Stack.Screen name="WatchlistScreen" component={WatchlistScreen} />
       <Stack.Screen name="CompletedConnectionsScreen" component={CompletedConnectionsScreen} />
       <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />
+      <Stack.Screen name="SubscriptionScreen" component={SubscriptionScreen} /> {/* Add SubscriptionScreen */}
     </Stack.Navigator>
   );
 };
