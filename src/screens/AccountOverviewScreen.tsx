@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { useSubscriptionStatus } from '../context/SubscriptionProvider';  // Import subscription status hook
 
 type AccountOverviewScreenNavigationProp = StackNavigationProp<RootStackParamList, 'AccountOverviewScreen'>;
 
@@ -17,6 +18,10 @@ const AccountOverviewScreen: React.FC<Props> = ({ navigation }) => {
     lastName: '',
     email: '',
   });
+
+  const { isSubscriber } = useSubscriptionStatus();  // Get subscription status
+  const user = auth().currentUser;
+  const isSamVary = user?.email === 'sam.vary@gmail.com';  // Check if the user is sam.vary@gmail.com
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -39,12 +44,20 @@ const AccountOverviewScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleLogout = () => {
     auth().signOut();
-    navigation.navigate('Login', { resetFields: true });  // Pass resetFields via route.params
+    navigation.navigate('Login', { resetFields: true });
   };
 
-  // Function to handle subscription management
   const handleSubscriptionPress = () => {
-    navigation.navigate('SubscriptionScreen'); // Assuming you have a screen for managing subscriptions
+    navigation.navigate('SubscriptionScreen');
+  };
+
+  // Function to handle navigation to Random Movie Recommendation screen
+  const handleRandomMoviePress = () => {
+    if (isSubscriber || isSamVary) {  // Allow access if subscribed or if user is Sam
+      navigation.navigate('RandomMovieRecommendation');
+    } else {
+      Alert.alert('Access Denied', 'You must be subscribed to access this feature.');
+    }
   };
 
   return (
@@ -88,14 +101,21 @@ const AccountOverviewScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.squareText}>Log Out</Text>
         </TouchableOpacity>
 
-        {/* Manage Subscription Button */}
+        {/* Manage Subscription */}
         <TouchableOpacity 
-          style={[styles.square, styles.pastelOrange]}  // Add a new style for this button
-          onPress={handleSubscriptionPress}  // Navigate to the subscription screen
+          style={[styles.square, styles.pastelOrange]}
+          onPress={handleSubscriptionPress}
         >
           <Text style={styles.squareText}>Manage Subscription</Text>
         </TouchableOpacity>
 
+        {/* Random Movie Recommendation */}
+        <TouchableOpacity 
+          style={[styles.square, styles.pastelPurple]}  // Add a new style for this button
+          onPress={handleRandomMoviePress}  // Navigate to the random movie screen
+        >
+          <Text style={styles.squareText}>Random Movie Recommendation</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -151,7 +171,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFEDB3',
   },
   pastelOrange: {
-    backgroundColor: '#FFA500',  // Style for the subscription button
+    backgroundColor: '#FFA500',
+  },
+  pastelPurple: {
+    backgroundColor: '#DDA0DD',  // New style for the Random Movie button
   },
 });
 
