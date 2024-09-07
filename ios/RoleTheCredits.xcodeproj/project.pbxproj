@@ -12,6 +12,7 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		291E709D2C85746100893AAB /* OldeEnglish.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 291E709A2C85689E00893AAB /* OldeEnglish.ttf */; };
+		2956E2D72C8CDBAE0030C429 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2956E2D62C8CDBAE0030C429 /* StoreKit.framework */; };
 		296D36552C80D70F00FC30DD /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 296D36542C80D70F00FC30DD /* GoogleService-Info.plist */; };
 		531A713E223DBED021827D96 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 74A08C7724C081C1E0BE969A /* PrivacyInfo.xcprivacy */; };
 		6D08FB22EF2EAA2A1BC804AD /* Pods_RoleTheCredits.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 837041EAB005D07507056CA4 /* Pods_RoleTheCredits.framework */; };
@@ -52,6 +53,7 @@
 		292E92F12C8368F5003B70DA /* libFirebaseFirestoreInternal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFirebaseFirestoreInternal.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		292E92F32C8368F5003B70DA /* libFirebaseSharedSwift.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFirebaseSharedSwift.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		292E92F52C836BCB003B70DA /* libFirebaseFirestoreInternal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libFirebaseFirestoreInternal.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2956E2D62C8CDBAE0030C429 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		2961430B2C85671500CA28E2 /* OldeEnglish.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = OldeEnglish.ttf; path = ../assets/fonts/OldeEnglish.ttf; sourceTree = "<group>"; };
 		296D36542C80D70F00FC30DD /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-RoleTheCredits.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RoleTheCredits.debug.xcconfig"; path = "Target Support Files/Pods-RoleTheCredits/Pods-RoleTheCredits.debug.xcconfig"; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6D08FB22EF2EAA2A1BC804AD /* Pods_RoleTheCredits.framework in Frameworks */,
+				2956E2D72C8CDBAE0030C429 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,6 +130,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2956E2D62C8CDBAE0030C429 /* StoreKit.framework */,
 				2961430B2C85671500CA28E2 /* OldeEnglish.ttf */,
 				292E92F52C836BCB003B70DA /* libFirebaseFirestoreInternal.a */,
 				292E92EB2C8368F5003B70DA /* libFirebaseAuth.a */,

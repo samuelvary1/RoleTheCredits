@@ -11,7 +11,8 @@ import { useDispatch } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import { useWatchlist } from '../context/WatchlistContext';
 import { useCompletedConnections } from '../context/CompletedConnectionsContext';
-
+import { useSubscriptionStatus } from '../context/SubscriptionProvider'; // Import subscription status hook
+import { requestSubscription } from 'react-native-iap'; // Import to handle purchases
 
 type GameScreenNavigationProp = StackNavigationProp<RootStackParamList, 'GameScreen'>;
 type GameScreenRouteProp = RouteProp<RootStackParamList, 'GameScreen'>;
@@ -21,10 +22,18 @@ type Props = {
   route: GameScreenRouteProp;
 };
 
+const subscriptionSku = 'role_the_credits_99c_monthly'; // Your subscription product ID
+
 const GameScreen: React.FC<Props> = ({ navigation, route }) => {
   const { addToWatchlist } = useWatchlist();  
   const { addCompletedConnection } = useCompletedConnections();
   const dispatch = useDispatch();
+
+  const isSubscriber = useSubscriptionStatus(); // Check subscription status
+  const [playCount, setPlayCount] = useState<number>(0); // Track play count
+  const [lastPlayedDate, setLastPlayedDate] = useState<Date>(new Date());
+
+  const maxPlays = isSubscriber ? 3 : 1; // Subscribers get 3 plays, free users get 1
 
   const {
     movieA = { id: 0, title: 'Unknown Movie A', posterPath: '', actors: [], type: 'movie' },
@@ -48,12 +57,51 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
   const [showConfirmButton, setShowConfirmButton] = useState<boolean>(false);
   const [path, setPath] = useState<PathNode[]>([{ id: movieA.id, title: movieA.title, type: 'movie', side: 'A' }]);
 
+  // Reset play count at the start of each new day
+  useEffect(() => {
+    const today = new Date();
+    if (today.toDateString() !== lastPlayedDate.toDateString()) {
+      setPlayCount(0);
+      setLastPlayedDate(today);
+    }
+  }, [lastPlayedDate]);
+
   useEffect(() => {
     const hasCommonActor = selectedActorA && selectedActorB && selectedActorA.id === selectedActorB.id;
     const hasCommonMovie = currentMovieA.id === currentMovieB.id;
 
     setShowConfirmButton(hasCommonActor || hasCommonMovie);
   }, [selectedActorA, selectedActorB, currentMovieA, currentMovieB]);
+
+  // Subscription purchase flow
+  const handlePurchaseSubscription = async () => {
+    try {
+      await requestSubscription({
+        sku: subscriptionSku, // Pass the subscription product ID as part of an object
+      });
+      Alert.alert('Subscription initiated');
+    } catch (error) {
+      console.error('Error purchasing subscription:', error);
+      Alert.alert('Error purchasing subscription');
+    }
+  };
+
+  const handlePlayGame = () => {
+    if (playCount < maxPlays) {
+      setPlayCount(playCount + 1);
+      Alert.alert('You played the game!');
+    } else {
+      // Prompt user to subscribe when the play limit is reached
+      Alert.alert(
+        'Play Limit Reached',
+        `You've reached your daily limit of ${maxPlays} plays. Subscribe to get more!`,
+        [
+          { text: 'Subscribe Now', onPress: handlePurchaseSubscription },
+          { text: 'Cancel', style: 'cancel' },
+        ],
+      );
+    }
+  };
 
   const handleActorPress = async (actorId: number, actorName: string, fromMovie: 'A' | 'B') => {
     if (fromMovie === 'A') {
@@ -298,6 +346,11 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
         </View>
       </ScrollView>
 
+      {/* Play Game Button */}
+      <TouchableOpacity style={styles.confirmButton} onPress={handlePlayGame}>
+        <Text style={styles.confirmButtonText}>Play Game</Text>
+      </TouchableOpacity>
+
       {/* Confirm Connection Button */}
       {showConfirmButton && (
         <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmConnection}>
@@ -390,4 +443,3 @@ const styles = StyleSheet.create({
 });
 
 export default GameScreen;
-

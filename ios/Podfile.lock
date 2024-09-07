@@ -2681,6 +2681,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNIap (12.15.3):
+    - React-Core
   - RNReanimated (3.15.1):
     - DoubleConversion
     - glog
@@ -2871,6 +2873,7 @@ DEPENDENCIES:
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNIap (from `../node_modules/react-native-iap`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
@@ -3042,6 +3045,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/firestore"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
+  RNIap:
+    :path: "../node_modules/react-native-iap"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -3142,6 +3147,7 @@ SPEC CHECKSUMS:
   RNFBAuth: ae6e6195e2cf783f8ad1977186925c61358c8ec9
   RNFBFirestore: c6f4790ed5b6e78da008c906657571be3800270b
   RNGestureHandler: 634189dbe31ecedf6e75c0d8b5ec5ae208850074
+  RNIap: 76bb8783a92a6e6bd2ad7a1e91a8b2e75930db36
   RNReanimated: d23c509e05bab52691ce7b81deb9fb9736b4d2d8
   RNScreens: de55b9d7de8a017d1588dcb70415492d0b0597c2
   RNVectorIcons: 6336d2071d885cc1081de5ab5deeaad4416aac50
