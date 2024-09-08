@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -14,14 +14,14 @@ type Props = {
 const subscriptionSku = 'role_the_credits_99c_monthly'; // Your subscription product ID
 
 const SubscriptionScreen: React.FC<Props> = ({ navigation }) => {
-  const isSubscriber = useSubscriptionStatus(); // Use custom hook to check if the user is a subscriber
+  const { isSubscriber, loading: checkingSubscriptionStatus } = useSubscriptionStatus(); // Use custom hook to check if the user is a subscriber
   const [loading, setLoading] = useState<boolean>(false); // Loading state for subscriptions
 
   // Handle purchase subscription
   const handlePurchaseSubscription = async () => {
     try {
       setLoading(true);
-      await requestSubscription({ sku: subscriptionSku }); // Fix: pass SKU as an object
+      await requestSubscription({ sku: subscriptionSku });
       Alert.alert('Success', 'Subscription purchased successfully!');
     } catch (error) {
       console.error('Error purchasing subscription:', error);
@@ -40,7 +40,7 @@ const SubscriptionScreen: React.FC<Props> = ({ navigation }) => {
     <View style={styles.container}>
       <Text style={styles.title}>Manage Subscription</Text>
 
-      {loading ? (
+      {checkingSubscriptionStatus || loading ? (
         <ActivityIndicator size="large" color="#007BFF" />
       ) : isSubscriber ? (
         <>
