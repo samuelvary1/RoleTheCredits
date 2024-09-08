@@ -15,6 +15,7 @@ import ChangePasswordScreen from '../screens/ChangePasswordScreen'; // Import Ch
 import SubscriptionScreen from '../screens/SubscriptionScreen'; // Import Subscription Screen
 import RandomMovieRecommendation from '../screens/RandomMovieRecommendation'; // Import Random Movie Recommendation Screen
 import { Actor, Movie, PathNode } from '../types';
+import HelpScreen from '../screens/HelpScreen';
 
 export type RootStackParamList = {
   Login: {
@@ -60,7 +61,8 @@ export type RootStackParamList = {
   CompletedConnectionsScreen: undefined;
   ChangePasswordScreen: undefined;
   SubscriptionScreen: undefined;
-  RandomMovieRecommendation: undefined; // Add Random Movie Recommendation screen
+  RandomMovieRecommendation: undefined;
+  HelpScreen: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -81,7 +83,8 @@ const AppNavigator = () => {
       <Stack.Screen name="CompletedConnectionsScreen" component={CompletedConnectionsScreen} />
       <Stack.Screen name="ChangePasswordScreen" component={ChangePasswordScreen} />
       <Stack.Screen name="SubscriptionScreen" component={SubscriptionScreen} />
-      <Stack.Screen name="RandomMovieRecommendation" component={RandomMovieRecommendation} /> {/* Add Random Movie Recommendation screen */}
+      <Stack.Screen name="RandomMovieRecommendation" component={RandomMovieRecommendation} />
+      <Stack.Screen name="HelpScreen" component={HelpScreen} />
     </Stack.Navigator>
   );
 };
