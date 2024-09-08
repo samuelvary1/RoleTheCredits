@@ -19,7 +19,7 @@ const AccountOverviewScreen: React.FC<Props> = ({ navigation }) => {
     email: '',
   });
 
-  const { isSubscriber } = useSubscriptionStatus();  // Get subscription status
+  const { isSubscriber, loading } = useSubscriptionStatus();  // Get subscription status and loading state
   const user = auth().currentUser;
   const isSamVary = user?.email === 'sam.vary@gmail.com';  // Check if the user is sam.vary@gmail.com
 
@@ -51,14 +51,18 @@ const AccountOverviewScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('SubscriptionScreen');
   };
 
-  // Function to handle navigation to Random Movie Recommendation screen
   const handleRandomMoviePress = () => {
-    if (isSubscriber || isSamVary) {  // Allow access if subscribed or if user is Sam
+    if (isSubscriber || isSamVary) {
       navigation.navigate('RandomMovieRecommendation');
     } else {
       Alert.alert('Access Denied', 'You must be subscribed to access this feature.');
     }
   };
+
+  // Render loading screen until subscription status is checked
+  if (loading) {
+    return <Text>Checking subscription status...</Text>;
+  }
 
   return (
     <View style={styles.container}>
@@ -111,8 +115,8 @@ const AccountOverviewScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Random Movie Recommendation */}
         <TouchableOpacity 
-          style={[styles.square, styles.pastelPurple]}  // Add a new style for this button
-          onPress={handleRandomMoviePress}  // Navigate to the random movie screen
+          style={[styles.square, styles.pastelPurple]}
+          onPress={handleRandomMoviePress}
         >
           <Text style={styles.squareText}>Random Movie Recommendation</Text>
         </TouchableOpacity>
@@ -147,7 +151,7 @@ const styles = StyleSheet.create({
   },
   square: {
     width: '48%',
-    aspectRatio: 1, // Keeps the squares square-shaped
+    aspectRatio: 1,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 10,
@@ -174,7 +178,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFA500',
   },
   pastelPurple: {
-    backgroundColor: '#DDA0DD',  // New style for the Random Movie button
+    backgroundColor: '#DDA0DD',
   },
 });
 
