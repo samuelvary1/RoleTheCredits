@@ -373,11 +373,6 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
         </View>
       </ScrollView>
 
-      {/* Play Game Button */}
-      <TouchableOpacity style={styles.confirmButton} onPress={handlePlayGame}>
-        <Text style={styles.confirmButtonText}>Play Game</Text>
-      </TouchableOpacity>
-
       {/* Confirm Connection Button */}
       {showConfirmButton && (
         <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmConnection}>
