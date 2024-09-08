@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, Button, StyleSheet, Alert, Dimensions, Modal } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Alert, Dimensions, Modal, Button, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; 
 import axios from 'axios';
 import { TMDB_API_KEY } from '@env';
@@ -8,7 +8,7 @@ import auth from '@react-native-firebase/auth';
 import { useWatchlist } from '../context/WatchlistContext'; 
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
-import Icon from 'react-native-vector-icons/Ionicons'; // Icon library
+import FontAwesome from 'react-native-vector-icons/FontAwesome'; // Icon library
 
 const { height: windowHeight } = Dimensions.get('window');
 const { width: windowWidth } = Dimensions.get('window');
@@ -17,6 +17,29 @@ type RandomMovieScreenNavigationProp = StackNavigationProp<RootStackParamList, '
 
 type Props = {
   navigation: RandomMovieScreenNavigationProp;
+};
+
+// Genre mappings (number to string)
+const genreMappings: { [key: string]: string } = {
+  '28': 'Action',
+  '12': 'Adventure',
+  '16': 'Animation',
+  '35': 'Comedy',
+  '80': 'Crime',
+  '99': 'Documentary',
+  '18': 'Drama',
+  '10751': 'Family',
+  '14': 'Fantasy',
+  '36': 'History',
+  '27': 'Horror',
+  '10402': 'Music',
+  '9648': 'Mystery',
+  '10749': 'Romance',
+  '878': 'Science Fiction',
+  '10770': 'TV Movie',
+  '53': 'Thriller',
+  '10752': 'War',
+  '37': 'Western',
 };
 
 const RandomMovieRecommendation: React.FC<Props> = ({ navigation }) => {
@@ -38,6 +61,7 @@ const RandomMovieRecommendation: React.FC<Props> = ({ navigation }) => {
     }
   }, [isSubscriber, isSamVary]);
 
+  // Generate year ranges (this part stays the same)
   const generateYearRanges = () => {
     const currentYear = new Date().getFullYear();
     const yearRanges: string[] = [];
@@ -51,14 +75,13 @@ const RandomMovieRecommendation: React.FC<Props> = ({ navigation }) => {
     return yearRanges;
   };
 
+  // Fetch a random movie (this part stays the same)
   const fetchRandomMovie = async () => {
     setLoading(true);
-    setMovie(null);
 
     try {
       const randomPage = Math.floor(Math.random() * 10) + 1;
       const [startYear, endYear] = yearRange.split('-');
-
       const genreFilter = genre ? `&with_genres=${genre}` : ''; 
       const yearFilter = `&primary_release_date.gte=${startYear}-01-01&primary_release_date.lte=${endYear}-12-31`;
 
@@ -99,6 +122,7 @@ const RandomMovieRecommendation: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      {/* Poster Container */}
       {movie && (
         <View style={styles.posterContainer}>
           <TouchableOpacity onPress={handleAddToWatchlist}>
@@ -112,73 +136,61 @@ const RandomMovieRecommendation: React.FC<Props> = ({ navigation }) => {
       )}
 
       {/* Genre Picker Button */}
-      <TouchableOpacity style={styles.pickerButton} onPress={() => setShowGenrePicker(!showGenrePicker)}>
-        <Text style={styles.pickerText}>Pick a Genre</Text>
-        <Icon name="caret-down" size={20} color="#fff" />
-      </TouchableOpacity>
-
-      {showGenrePicker && (
-        <Modal transparent={true} animationType="slide">
-          <View style={styles.modal}>
-            <Picker
-              selectedValue={genre}
-              onValueChange={(itemValue) => setGenre(itemValue)}
-              style={styles.picker}>
-              <Picker.Item label="Action" value="28" />
-              <Picker.Item label="Adventure" value="12" />
-              <Picker.Item label="Animation" value="16" />
-              <Picker.Item label="Comedy" value="35" />
-              <Picker.Item label="Crime" value="80" />
-              <Picker.Item label="Documentary" value="99" />
-              <Picker.Item label="Drama" value="18" />
-              <Picker.Item label="Family" value="10751" />
-              <Picker.Item label="Fantasy" value="14" />
-              <Picker.Item label="History" value="36" />
-              <Picker.Item label="Horror" value="27" />
-              <Picker.Item label="Music" value="10402" />
-              <Picker.Item label="Mystery" value="9648" />
-              <Picker.Item label="Romance" value="10749" />
-              <Picker.Item label="Science Fiction" value="878" />
-              <Picker.Item label="TV Movie" value="10770" />
-              <Picker.Item label="Thriller" value="53" />
-              <Picker.Item label="War" value="10752" />
-              <Picker.Item label="Western" value="37" />
-            </Picker>
-            <Button title="Close" onPress={() => setShowGenrePicker(false)} />
-          </View>
-        </Modal>
-      )}
+      <View style={styles.fixedPickerButton}>
+        <TouchableOpacity style={styles.pickerButton} onPress={() => setShowGenrePicker(!showGenrePicker)}>
+          <Text style={styles.pickerText}>{genreMappings[genre]}</Text>
+          <FontAwesome name="caret-down" size={20} color="#fff" />
+        </TouchableOpacity>
+        {showGenrePicker && (
+          <Modal transparent={true} animationType="none">
+            <View style={styles.modal}>
+              <Picker
+                selectedValue={genre}
+                onValueChange={(itemValue) => setGenre(itemValue)}
+                style={styles.picker}>
+                {Object.entries(genreMappings).map(([value, label]) => (
+                  <Picker.Item label={label} value={value} key={value} />
+                ))}
+              </Picker>
+              <Button title="Close" onPress={() => setShowGenrePicker(false)} />
+            </View>
+          </Modal>
+        )}
+      </View>
 
       {/* Year Picker Button */}
-      <TouchableOpacity style={styles.pickerButton} onPress={() => setShowYearPicker(!showYearPicker)}>
-        <Text style={styles.pickerText}>Pick a Year Range</Text>
-        <Icon name="caret-down" size={20} color="#fff" />
-      </TouchableOpacity>
+      <View style={styles.fixedPickerButton}>
+        <TouchableOpacity style={styles.pickerButton} onPress={() => setShowYearPicker(!showYearPicker)}>
+          <Text style={styles.pickerText}>{yearRange}</Text>
+          <FontAwesome name="caret-down" size={20} color="#fff" />
+        </TouchableOpacity>
+        {showYearPicker && (
+          <Modal transparent={true} animationType="none">
+            <View style={styles.modal}>
+              <Picker
+                selectedValue={yearRange}
+                onValueChange={(itemValue) => setYearRange(itemValue)}
+                style={styles.picker}>
+                {generateYearRanges().map((range) => (
+                  <Picker.Item label={range} value={range} key={range} />
+                ))}
+              </Picker>
+              <Button title="Close" onPress={() => setShowYearPicker(false)} />
+            </View>
+          </Modal>
+        )}
+      </View>
 
-      {showYearPicker && (
-        <Modal transparent={true} animationType="slide">
-          <View style={styles.modal}>
-            <Picker
-              selectedValue={yearRange}
-              onValueChange={(itemValue) => setYearRange(itemValue)}
-              style={styles.picker}>
-              {generateYearRanges().map((range) => (
-                <Picker.Item label={range} value={range} key={range} />
-              ))}
-            </Picker>
-            <Button title="Close" onPress={() => setShowYearPicker(false)} />
-          </View>
-        </Modal>
-      )}
-
+      {/* Shuffle Button */}
       <View style={styles.shuffleButtonContainer}>
         <TouchableOpacity style={styles.blueButton} onPress={fetchRandomMovie} disabled={loading}>
           <Text style={styles.buttonText}>Shuffle</Text>
         </TouchableOpacity>
       </View>
 
-      {loading && <Text>Loading...</Text>}
+      {loading && <ActivityIndicator size="large" color="#0000ff" />}
 
+      {/* Back Button */}
       <View style={styles.backButtonContainer}>
         <TouchableOpacity style={styles.blueButton} onPress={() => navigation.navigate('AccountOverviewScreen')}>
           <Text style={styles.buttonText}>Back to Account Overview</Text>
@@ -192,7 +204,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 50,
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 20,
   },
   posterContainer: {
@@ -210,6 +223,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
   },
+  fixedPickerButton: {
+    marginBottom: 20, // Add space between pickers and buttons
+  },
   pickerButton: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -217,7 +233,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 25,
-    marginVertical: 10,
     alignItems: 'center',
   },
   pickerText: {
