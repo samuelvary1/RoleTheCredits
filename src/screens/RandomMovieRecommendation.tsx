@@ -188,8 +188,6 @@ const RandomMovieRecommendation: React.FC<Props> = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {loading && <ActivityIndicator size="large" color="#0000ff" />}
-
       {/* Back Button */}
       <View style={styles.backButtonContainer}>
         <TouchableOpacity style={styles.blueButton} onPress={() => navigation.navigate('AccountOverviewScreen')}>
