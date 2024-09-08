@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Alert, Dimensions, Modal, Button, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Alert, Dimensions, Modal, Button } from 'react-native';
 import { Picker } from '@react-native-picker/picker'; 
 import axios from 'axios';
 import { TMDB_API_KEY } from '@env';
@@ -51,7 +51,6 @@ const RandomMovieRecommendation: React.FC<Props> = ({ navigation }) => {
   const [movie, setMovie] = useState<any>(null); 
   const [genre, setGenre] = useState<string>('28'); 
   const [yearRange, setYearRange] = useState<string>('2000-2023'); 
-  const [loading, setLoading] = useState<boolean>(false);
   const [showGenrePicker, setShowGenrePicker] = useState<boolean>(false);
   const [showYearPicker, setShowYearPicker] = useState<boolean>(false);
 
@@ -61,7 +60,7 @@ const RandomMovieRecommendation: React.FC<Props> = ({ navigation }) => {
     }
   }, [isSubscriber, isSamVary]);
 
-  // Generate year ranges (this part stays the same)
+  // Generate year ranges
   const generateYearRanges = () => {
     const currentYear = new Date().getFullYear();
     const yearRanges: string[] = [];
@@ -75,9 +74,9 @@ const RandomMovieRecommendation: React.FC<Props> = ({ navigation }) => {
     return yearRanges;
   };
 
-  // Fetch a random movie (this part stays the same)
+  // Fetch a random movie
   const fetchRandomMovie = async () => {
-    setLoading(true);
+    setMovie(null);
 
     try {
       const randomPage = Math.floor(Math.random() * 10) + 1;
@@ -99,8 +98,6 @@ const RandomMovieRecommendation: React.FC<Props> = ({ navigation }) => {
     } catch (error) {
       console.error('Error fetching random movie:', error);
       Alert.alert('Error', 'Failed to fetch random movies. Please check your network and API settings.');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -122,18 +119,22 @@ const RandomMovieRecommendation: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Poster Container */}
-      {movie && (
-        <View style={styles.posterContainer}>
-          <TouchableOpacity onPress={handleAddToWatchlist}>
-            <Image
-              source={{ uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }}
-              style={styles.poster}
-            />
-          </TouchableOpacity>
-          <Text style={styles.movieTitle}>{movie.title}</Text>
-        </View>
-      )}
+      {/* Poster space is reserved so buttons don't move */}
+      <View style={styles.posterContainer}>
+        {movie && (
+          <>
+            <TouchableOpacity onPress={handleAddToWatchlist}>
+              <Image
+                source={{ uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }}
+                style={styles.poster}
+              />
+            </TouchableOpacity>
+            <Text style={styles.movieTitle}>
+              {movie.title} {movie.release_date && `(${new Date(movie.release_date).getFullYear()})`}
+            </Text>
+          </>
+        )}
+      </View>
 
       {/* Genre Picker Button */}
       <View style={styles.fixedPickerButton}>
@@ -142,7 +143,7 @@ const RandomMovieRecommendation: React.FC<Props> = ({ navigation }) => {
           <FontAwesome name="caret-down" size={20} color="#fff" />
         </TouchableOpacity>
         {showGenrePicker && (
-          <Modal transparent={true} animationType="none">
+          <Modal transparent={true} animationType="slide">
             <View style={styles.modal}>
               <Picker
                 selectedValue={genre}
@@ -165,7 +166,7 @@ const RandomMovieRecommendation: React.FC<Props> = ({ navigation }) => {
           <FontAwesome name="caret-down" size={20} color="#fff" />
         </TouchableOpacity>
         {showYearPicker && (
-          <Modal transparent={true} animationType="none">
+          <Modal transparent={true} animationType="slide">
             <View style={styles.modal}>
               <Picker
                 selectedValue={yearRange}
@@ -183,12 +184,12 @@ const RandomMovieRecommendation: React.FC<Props> = ({ navigation }) => {
 
       {/* Shuffle Button */}
       <View style={styles.shuffleButtonContainer}>
-        <TouchableOpacity style={styles.blueButton} onPress={fetchRandomMovie} disabled={loading}>
+        <TouchableOpacity style={styles.blueButton} onPress={fetchRandomMovie}>
           <Text style={styles.buttonText}>Shuffle</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Back Button */}
+      {/* Back to Account Overview Button */}
       <View style={styles.backButtonContainer}>
         <TouchableOpacity style={styles.blueButton} onPress={() => navigation.navigate('AccountOverviewScreen')}>
           <Text style={styles.buttonText}>Back to Account Overview</Text>
@@ -201,18 +202,20 @@ const RandomMovieRecommendation: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
   posterContainer: {
+    height: windowHeight * 0.3, // Keep the height for poster space
+    justifyContent: 'flex-start', // Move poster towards the top
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 150,
+    marginTop: -30, // Negative margin to move the poster up
   },
   poster: {
-    width: windowWidth * 0.4,
-    height: windowHeight * 0.25,
+    width: windowWidth * 0.5, // Increased poster size
+    height: windowHeight * 0.35, // Increased height for a bigger poster
     resizeMode: 'cover',
   },
   movieTitle: {
@@ -222,7 +225,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   fixedPickerButton: {
-    marginBottom: 20, // Add space between pickers and buttons
+    marginBottom: 10, // Add space between pickers and buttons
   },
   pickerButton: {
     flexDirection: 'row',
