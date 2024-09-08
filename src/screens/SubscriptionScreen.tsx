@@ -11,7 +11,7 @@ type Props = {
   navigation: SubscriptionScreenNavigationProp;
 };
 
-const subscriptionSku = 'role_the_credits_99c_monthly'; // Your subscription product ID
+const subscriptionSku = 'role_the_credits_99c_monthly';
 
 const SubscriptionScreen: React.FC<Props> = ({ navigation }) => {
   const { isSubscriber, loading: checkingSubscriptionStatus } = useSubscriptionStatus(); // Use custom hook to check if the user is a subscriber
@@ -21,6 +21,7 @@ const SubscriptionScreen: React.FC<Props> = ({ navigation }) => {
   const handlePurchaseSubscription = async () => {
     try {
       setLoading(true);
+      console.log(subscriptionSku);
       await requestSubscription({ sku: subscriptionSku });
       Alert.alert('Success', 'Subscription purchased successfully!');
     } catch (error) {
