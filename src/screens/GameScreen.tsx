@@ -33,7 +33,7 @@ const GameScreen: React.FC<Props> = ({ navigation, route }) => {
   const dispatch = useDispatch();
 
   // Get subscription status and playsRemaining from the SubscriptionProvider
-  const { isSubscriber, playsRemaining } = useSubscriptionStatus();
+  const { isSubscriber } = useSubscriptionStatus();
   const user = auth().currentUser;
   const [playCount, setPlayCount] = useState<number>(0); // Guest play count
   const [lastPlayedDate, setLastPlayedDate] = useState<Date>(new Date());
