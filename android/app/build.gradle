@@ -105,6 +105,15 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+    flavorDimensions "store"
+    productFlavors {
+        play {
+            dimension "store"
+        }
+        amazon {
+            dimension "store"
+        }
+    }
 }
 
 dependencies {
