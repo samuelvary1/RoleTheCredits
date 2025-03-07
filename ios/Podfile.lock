@@ -2683,7 +2683,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNIap (12.15.3):
+  - RNIap (12.16.0):
     - React-Core
   - RNReanimated (3.15.1):
     - DoubleConversion
@@ -3153,13 +3153,13 @@ SPEC CHECKSUMS:
   RNFBAuth: ae6e6195e2cf783f8ad1977186925c61358c8ec9
   RNFBFirestore: c6f4790ed5b6e78da008c906657571be3800270b
   RNGestureHandler: 634189dbe31ecedf6e75c0d8b5ec5ae208850074
-  RNIap: 76bb8783a92a6e6bd2ad7a1e91a8b2e75930db36
+  RNIap: 4a40df8443e6bc4f02ea936beda006743c487f6a
   RNReanimated: d23c509e05bab52691ce7b81deb9fb9736b4d2d8
   RNScreens: de55b9d7de8a017d1588dcb70415492d0b0597c2
   RNVectorIcons: 6336d2071d885cc1081de5ab5deeaad4416aac50
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   Yoga: 36d44f1d31d7c11be1067e5c7a70a12c2eed355c
 
-PODFILE CHECKSUM: d75ce5096295b10a76ffa45efd88763dc8529f5f
+PODFILE CHECKSUM: cbe63d82465ff6b3e583db69b98a1af0f83feb8f
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2
